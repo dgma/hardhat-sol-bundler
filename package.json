@@ -1,0 +1,29 @@
+{
+  "name": "@dogma/sol-bundler",
+  "version": "0.0.1",
+  "description": "A bundler for solidity contracts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dgma/sol-bundler.git"
+  },
+  "author": "Dogma Foundation",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/dgma/sol-bundler/issues"
+  },
+  "homepage": "https://github.com/dgma/sol-bundler#readme",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.1",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.1",
+    "ethers": "^5.0.0",
+    "hardhat": "^2.0.0"
+  }
+}
