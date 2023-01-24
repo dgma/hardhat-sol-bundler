@@ -4,7 +4,7 @@
   "description": "A bundler for solidity contracts",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "exit 0"
   },
   "repository": {
     "type": "git",
@@ -16,6 +16,9 @@
     "url": "https://github.com/dgma/sol-bundler/issues"
   },
   "homepage": "https://github.com/dgma/sol-bundler#readme",
+  "publishConfig": {
+    "@dogma:registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.1",
     "ethers": "^5.7.2",
