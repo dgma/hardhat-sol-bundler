@@ -1,6 +1,6 @@
 {
   "name": "@dgma/sol-bundler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A bundler for solidity contracts",
   "main": "index.js",
   "scripts": {
