@@ -1,0 +1,16 @@
+
+
+name: quality-gate
+on:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install modules
+      run: npm i
+    - name: Run unit tests
+      run: npm run test:unit
+    - name: Run integration tests
+      run: npm run test:integration
