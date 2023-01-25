@@ -4,7 +4,12 @@
   "description": "A bundler for solidity contracts",
   "main": "index.js",
   "scripts": {
-    "test": "exit 0"
+    "test:unit": "jest",
+    "test:integration": "hardhat test",
+    "compile": "hardhat compile"
+  },
+  "jest": {
+    "testPathIgnorePatterns": ["integration"]
   },
   "repository": {
     "type": "git",
@@ -20,13 +25,14 @@
     "@dogma:registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.2.1",
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
     "ethers": "^5.7.2",
-    "hardhat": "^2.0.0"
+    "hardhat": "^2.12.6",
+    "jest": "^29.4.0"
   },
   "peerDependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.2.1",
-    "ethers": "^5.0.0",
-    "hardhat": "^2.0.0"
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.12.6"
   }
 }
