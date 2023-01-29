@@ -21,7 +21,7 @@ module.exports = async function solBundler({
     deploymentMetaData = getDeploymentMetadata(lockfileName);
 
     deploymentContext = await createDeploymentContext(
-      deploymentMetaData[network.name],
+      deploymentMetaData[network],
       deploymentConfig
     );
   }

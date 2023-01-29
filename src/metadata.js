@@ -27,8 +27,8 @@ function saveDeploymentMetadataLockFile({
 
   const newMetaData = {
     ...deploymentMetaData,
-    [network.name]: {
-      ...deploymentMetaData[network.name],
+    [network]: {
+      ...deploymentMetaData[network],
       ...newMetaDataFromDeploymentContext,
     },
   };
