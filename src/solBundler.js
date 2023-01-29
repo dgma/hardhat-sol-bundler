@@ -16,7 +16,7 @@ module.exports = async function solBundler({
   let network, deploymentMetaData, deploymentContext;
   PluginsManager.registerPlugins(plugins);
   if (!noLockFile) {
-    network = await ethers.getDefaultProvider().getNetwork();
+    network = await hre?.hardhatArguments?.network || 'unknown';
     // deploymentMetaData is a substract of deploymentContext without interface
     deploymentMetaData = getDeploymentMetadata(lockfileName);
 
