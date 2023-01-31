@@ -39,8 +39,15 @@ function configTraverse({
 
 module.exports = function createDeploymentStack({ config, context }) {
   const deploymentStack = [];
-  const deploymentSet = new Set(Object.keys(context));
   const deploymentItemKeys = Object.keys(config);
+
+  const alreadyDeployed = Object.keys(context)
+    .filter(
+      (configKey) => !context[configKey].factoryByteCode
+    );
+
+  const deploymentSet = new Set(alreadyDeployed);
+  
   let i = 0;
   while (deploymentStack.length !== deploymentItemKeys.length) {
     const deploymentItemKey = deploymentItemKeys[i];
