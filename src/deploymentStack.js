@@ -37,10 +37,10 @@ function configTraverse({
   return;
 }
 
-module.exports = function createDeploymentStack(deploymentConfig) {
+module.exports = function createDeploymentStack({ config, context }) {
   const deploymentStack = [];
-  const deploymentSet = new Set();
-  const deploymentItemKeys = Object.keys(deploymentConfig);
+  const deploymentSet = new Set(Object.keys(context));
+  const deploymentItemKeys = Object.keys(config);
   let i = 0;
   while (deploymentStack.length !== deploymentItemKeys.length) {
     const deploymentItemKey = deploymentItemKeys[i];
@@ -48,7 +48,7 @@ module.exports = function createDeploymentStack(deploymentConfig) {
       deploymentItemKey,
       deploymentStack,
       deploymentSet,
-      deploymentConfig,
+      deploymentConfig: config,
     });
     i++;
   }

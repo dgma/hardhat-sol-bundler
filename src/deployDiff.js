@@ -40,7 +40,7 @@ module.exports = async function deployDiff(
 
   await PluginsManager.on(Hooks.BEFORE_CREATE_DEPLOYMENT_STACK, deployer);
 
-  const deploymentStack = createDeploymentStack(deployer.config);
+  const deploymentStack = createDeploymentStack(deployer);
 
   const deployedContracts = [];
   await deploymentStack.reduce(
