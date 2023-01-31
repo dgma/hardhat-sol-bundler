@@ -13,6 +13,11 @@ function configTraverse({
   }
   const deploymentItemConfig = deploymentConfig?.[deploymentItemKey];
 
+  if (!deploymentItemConfig) {
+    console.warn(`sol-bundler:createDeploymentStack:: there is no schema for ${deploymentItemKey}, deployment for it will be skipped`);
+    return;
+  }
+
   if (!deploymentItemConfig?.dependencies?.length) {
     deploymentStack.push(deploymentItemKey);
     deploymentSet.add(deploymentItemKey);
