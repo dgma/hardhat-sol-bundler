@@ -5,9 +5,12 @@ const { Hooks, PluginsManager } = require("./plugins");
 const createFactoryDeps = (deployer) => {
   if (deployer.contractSchema.libs) {
     return {
-      libraries: composeFromEntires(
-        Object.entries(deployer.contractSchema.libs),
-        (libraryKey) => deployer.context[libraryKey].address
+      libraries: deployer.contractSchema.libs.reduce(
+        (acc, library) => ({
+          ...acc,
+          [library]: deployer.context[library].address
+        }),
+        {}
       ),
     };
   }
@@ -21,7 +24,7 @@ const createDeploymentConfig = (deployer) => {
 
 const extendConfigWithLibDeps = (deploymentItemConfig) => ({
   ...deploymentItemConfig,
-  dependencies: Object.values(deploymentItemConfig.libs || {}),
+  dependencies: deploymentItemConfig.libs || [],
 });
 
 module.exports = async function deployDiff(
@@ -44,24 +47,24 @@ module.exports = async function deployDiff(
 
   const deployedContracts = [];
   await deploymentStack.reduce(
-    (promise, contractToDeployKey) =>
+    (promise, contractToDeploy) =>
       promise.then(async () => {
 
-        deployer.contractSchema = deployer.config[contractToDeployKey];
+        deployer.contractSchema = deployer.config[contractToDeploy];
 
         createDeploymentConfig(deployer);
 
         await PluginsManager.on(Hooks.BEFORE_CONTRACT_BUILD, deployer);
         
         const ContractFactory = await ethers.getContractFactory(
-          deployer.contractSchema.name,
+          contractToDeploy,
           deployer.contractSchema.factoryDeps
         );
 
         if (
-          deployer.context[contractToDeployKey] &&
+          deployer.context[contractToDeploy] &&
           ContractFactory.bytecode ===
-          deployer.context[contractToDeployKey].factoryByteCode
+          deployer.context[contractToDeploy].factoryByteCode
         ) {
           return;
         }
@@ -71,13 +74,13 @@ module.exports = async function deployDiff(
         );
         await contract.deployed();
 
-        deployer.context[contractToDeployKey] = {
+        deployer.context[contractToDeploy] = {
           address: contract.address,
           interface: contract.interface,
           factoryByteCode: ContractFactory.bytecode,
         };
 
-        return deployedContracts.push(contractToDeployKey);
+        return deployedContracts.push(contractToDeploy);
       }),
     Promise.resolve({})
   );

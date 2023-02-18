@@ -10,8 +10,8 @@ const deploy = () => solBundler({
 describe('solBundler', () => {
   it('should deploy contracts based on config file', async () => {
     const [deploymentContracts, deploymentContext] = await deploy();
-    expect(deploymentContracts).to.eql(["testLibrary", "testContract"]);
-    expect(deploymentContext).to.have.property('testContract');
-    expect(deploymentContext).to.have.property('testLibrary');
+    expect(deploymentContracts).to.eql(["TestLibrary", "TestContract"]);
+    expect(deploymentContext).to.have.property('TestContract');
+    expect(deploymentContext).to.have.property('TestLibrary');
   });
 })

@@ -1,12 +1,7 @@
 module.exports = {
-  testLibrary: {
-    name: "TestLibrary",
-  },
-  testContract: {
-    name: "TestContract",
-    libs: {
-      TestLibrary: "testLibrary",
-    },
+  TestLibrary: {},
+  TestContract: {
+    libs: ["TestLibrary"],
     deploymentArgs: ["hello"]
   },
 }
