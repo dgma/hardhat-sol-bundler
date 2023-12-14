@@ -1,44 +1,12 @@
 const deployDiff = require("./deployDiff");
-const createDeploymentContext = require('./context');
-const {
-  getDeploymentMetadata,
-  saveDeploymentMetadataLockFile,
-} = require("./metadata");
-const { PluginsManager } = require("./plugins");
+const PluginsManager = require("./PluginsManager");
+const InternalPlugins = require("./plugins");
+const { getDeployment } = require("./utils");
 
+module.exports = async function solBundler(hre) {
+  const plugins = getDeployment(hre)?.plugins || [];
 
-module.exports = async function solBundler({
-  noLockFile,
-  deploymentConfig,
-  plugins,
-  lockfileName,
-}) {
-  let network, deploymentMetaData, deploymentContext;
-  PluginsManager.registerPlugins(plugins);
-  if (!noLockFile) {
-    network = hre.network.name || 'unknown';
-    // deploymentMetaData is a substract of deploymentContext without interface
-    deploymentMetaData = getDeploymentMetadata(lockfileName);
+  PluginsManager.registerPlugins(InternalPlugins.concat(plugins));
 
-    deploymentContext = await createDeploymentContext(
-      deploymentMetaData[network],
-      deploymentConfig
-    );
-  }
-
-  const [deployedContracts, newDeploymentContext] = await deployDiff(
-    deploymentContext,
-    deploymentConfig
-  );
-
-  if (!noLockFile) {
-    saveDeploymentMetadataLockFile({
-      deploymentMetaData,
-      newDeploymentContext,
-      network,
-      lockfileName,
-    });
-  }
-
-  return [deployedContracts, newDeploymentContext];
-}
+  return deployDiff(hre);
+};

@@ -1,89 +1,72 @@
-const createDeploymentStack = require("./deploymentStack");
-const { composeFromEntires } = require("./utils");
-const { Hooks, PluginsManager } = require("./plugins");
+const PluginsManager = require("./PluginsManager");
+const { getDeployment } = require("./utils");
 
-const createFactoryDeps = (deployer) => {
-  if (deployer.contractSchema.libs) {
-    return {
-      libraries: deployer.contractSchema.libs.reduce(
-        (acc, library) => ({
-          ...acc,
-          [library]: deployer.context[library].address
-        }),
-        {}
-      ),
-    };
-  }
-  return {};
-};
+module.exports = async function deployDiff(hre) {
+  const state = {
+    hre,
+    ctx: {},
+    deployedContracts: [],
+  };
 
-const createDeploymentConfig = (deployer) => {
-  deployer.contractSchema.factoryDeps = createFactoryDeps(deployer);
-  deployer.contractSchema.deploymentArgs = deployer.contractSchema.deploymentArgs ?? [];
-};
+  await PluginsManager.on(PluginsManager.Hooks.BEFORE_DEPLOYMENT, state);
 
-const extendConfigWithLibDeps = (deploymentItemConfig) => ({
-  ...deploymentItemConfig,
-  dependencies: deploymentItemConfig.libs || [],
-});
-
-module.exports = async function deployDiff(
-  initDeploymentContext = {},
-  initDeploymentConfig = {}
-) {
-  const deployer = {
-    context: {
-      ...initDeploymentContext,
-    },
-    config: composeFromEntires(
-      Object.entries(initDeploymentConfig),
-      extendConfigWithLibDeps
-    ),
-  }
-
-  await PluginsManager.on(Hooks.BEFORE_CREATE_DEPLOYMENT_STACK, deployer);
-
-  const deploymentStack = createDeploymentStack(deployer.config);
-
-  const deployedContracts = [];
-  await deploymentStack.reduce(
+  await Object.keys(getDeployment(hre).config).reduce(
     (promise, contractToDeploy) =>
       promise.then(async () => {
-
-        deployer.contractSchema = deployer.config[contractToDeploy];
-
-        createDeploymentConfig(deployer);
-
-        await PluginsManager.on(Hooks.BEFORE_CONTRACT_BUILD, deployer);
-        
-        const ContractFactory = await ethers.getContractFactory(
-          contractToDeploy,
-          deployer.contractSchema.factoryDeps
-        );
-
-        if (
-          deployer.context[contractToDeploy] &&
-          ContractFactory.bytecode ===
-          deployer.context[contractToDeploy].factoryByteCode
-        ) {
-          return;
-        }
-
-        const contract = await ContractFactory.deploy(
-          ...deployer.contractSchema.deploymentArgs
-        );
-        await contract.deployed();
-
-        deployer.context[contractToDeploy] = {
-          address: contract.address,
-          interface: contract.interface,
-          factoryByteCode: ContractFactory.bytecode,
+        state.currentContract = {
+          name: contractToDeploy,
+          factoryOptions: {},
+          constructorArguments: [],
         };
 
-        return deployedContracts.push(contractToDeploy);
+        await PluginsManager.on(
+          PluginsManager.Hooks.BEFORE_CONTRACT_BUILD,
+          state
+        );
+
+        state.currentContract.factory = await hre.ethers.getContractFactory(
+          state.currentContract.name,
+          state.currentContract.factoryOptions
+        );
+
+        await PluginsManager.on(
+          PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
+          state
+        );
+
+        const isSameByteCode =
+          state.currentContract.factory.bytecode ===
+          state.ctx[contractToDeploy]?.factoryByteCode;
+
+        const isSameArguments =
+          JSON.stringify(state.currentContract.constructorArguments) ===
+          JSON.stringify(state.ctx[contractToDeploy]?.args);
+
+        if (isSameByteCode && isSameArguments) return;
+
+        await PluginsManager.on(
+          PluginsManager.Hooks.BEFORE_CONTRACT_DEPLOY,
+          state
+        );
+
+        state.currentContract.contract =
+          await state.currentContract.factory.deploy(
+            ...state.currentContract.constructorArguments
+          );
+
+        await state.currentContract.contract.waitForDeployment();
+
+        await PluginsManager.on(
+          PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY,
+          state
+        );
+
+        state.deployedContracts.push(contractToDeploy);
       }),
     Promise.resolve({})
   );
 
-  return [deployedContracts, deployer.context];
+  await PluginsManager.on(PluginsManager.Hooks.AFTER_DEPLOYMENT, state);
+
+  return state;
 };

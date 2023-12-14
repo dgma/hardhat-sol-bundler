@@ -1,6 +1,6 @@
 {
   "name": "@dgma/sol-bundler",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "A bundler for solidity contracts",
   "main": "index.js",
   "files": [
@@ -13,7 +13,9 @@
     "compile": "hardhat compile"
   },
   "jest": {
-    "testPathIgnorePatterns": ["integration"]
+    "testPathIgnorePatterns": [
+      "integration"
+    ]
   },
   "repository": {
     "type": "git",
@@ -28,11 +30,12 @@
   "publishConfig": {
     "@dogma:registry": "https://npm.pkg.github.com"
   },
-  "dependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
-    "@nomiclabs/hardhat-ethers": "^2.2.2",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.12.7",
-    "jest": "^29.4.3"
+  "peerDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "ethers": "^6.8.1",
+    "hardhat": "^2.19.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }

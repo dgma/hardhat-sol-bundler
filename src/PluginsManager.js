@@ -1,11 +1,17 @@
 const Hooks = {
-  BEFORE_CREATE_DEPLOYMENT_STACK: "BEFORE_CREATE_DEPLOYMENT_STACK",
+  BEFORE_DEPLOYMENT: "BEFORE_DEPLOYMENT_INIT",
   BEFORE_CONTRACT_BUILD: "BEFORE_CONTRACT_BUILD",
+  BEFORE_CONTRACT_DEPLOY: "BEFORE_CONTRACT_DEPLOY",
+  AFTER_DEPLOYMENT: "AFTER_DEPLOYMENT",
+  AFTER_CONTRACT_BUILD: "AFTER_CONTRACT_BUILD",
+  AFTER_CONTRACT_DEPLOY: "AFTER_CONTRACT_DEPLOY",
 };
 
 const HooksList = Object.values(Hooks);
 
 class PluginsManager {
+  Hooks = Hooks;
+
   constructor() {
     this.handlers = {};
   }
@@ -39,13 +45,10 @@ class PluginsManager {
     }
 
     for (const hook of this.handlers[hookName]) {
-      await hook(...args)
+      await hook(...args);
     }
     return this;
   }
 }
 
-module.exports = {
-  Hooks,
-  PluginsManager: new PluginsManager(),
-};
+module.exports = new PluginsManager();
