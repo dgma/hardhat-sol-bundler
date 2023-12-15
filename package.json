@@ -1,7 +1,7 @@
 {
   "name": "@dgma/sol-bundler",
   "version": "0.1.0",
-  "description": "A bundler for solidity contracts",
+  "description": "Declarative deployment tool for smart contracts",
   "main": "index.js",
   "files": [
     "src",

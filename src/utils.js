@@ -1,11 +1,8 @@
 const fs = require("fs");
 
-const identity = (val) => val;
+const I = (val) => val;
 
-const composeFromEntires = (
-  entries = Object.entries({}),
-  valueMapper = identity
-) =>
+const composeFromEntires = (entries = Object.entries({}), valueMapper = I) =>
   entries.reduce(
     (acc, [key, value]) => ({
       ...acc,
@@ -30,7 +27,7 @@ const getDeployment = (hre) => {
 };
 
 module.exports = {
-  identity,
+  I,
   composeFromEntires,
   getLock,
   getDeployment,

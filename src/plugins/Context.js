@@ -2,13 +2,13 @@ const PluginsManager = require("../PluginsManager");
 const { composeFromEntires, getLock, getDeployment } = require("../utils");
 
 const getLibrariesDynamically = async (hre, ctx, libs = {}) => {
-  const libRequests = Object.entries(libs).map(async ([libName, getter]) => {
+  const promises = Object.entries(libs).map(async ([libName, getter]) => {
     return [
       libName,
       typeof getter === "function" ? await getter(hre, ctx) : getter,
     ];
   });
-  const resolvedLibs = await Promise.all(libRequests);
+  const resolvedLibs = await Promise.all(promises);
   return composeFromEntires(resolvedLibs);
 };
 

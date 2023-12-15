@@ -1,10 +1,11 @@
-const solBundler = require("./solBundler");
+const main = require("./main");
+const { A } = require("./utils");
 
 const mockGetDeployment = jest.fn(() => ({
   plugins: ["customPlugin"],
 }));
 const mockRegisterPlugins = jest.fn();
-const mockDeployDiff = jest.fn(() => ({ ctx: "ctx" }));
+const mockDeploy = jest.fn(() => ({ ctx: "ctx" }));
 
 jest.mock("./utils", () => ({
   getDeployment: (...args) => mockGetDeployment(...args),
@@ -13,22 +14,19 @@ jest.mock("./plugins", () => ["plugin1", "plugin2"]);
 jest.mock("./PluginsManager", () => ({
   registerPlugins: (...args) => mockRegisterPlugins(...args),
 }));
-jest.mock(
-  "./deployDiff",
-  () =>
-    (...args) =>
-      mockDeployDiff(...args)
-);
+jest.mock("./deploy", () => ({
+  deploy: (...args) => mockDeploy(...args),
+}));
 
-describe("solBundler", () => {
+describe("main", () => {
   const hre = {};
 
   it("should read plugins from config", async () => {
-    await solBundler(hre);
+    await main(hre);
     expect(mockGetDeployment).toBeCalledWith(hre);
   });
   it("should register plugins with internal first", async () => {
-    await solBundler(hre);
+    await main(hre);
     expect(mockRegisterPlugins).toBeCalledWith([
       "plugin1",
       "plugin2",
@@ -36,9 +34,9 @@ describe("solBundler", () => {
     ]);
   });
 
-  it("should return deployDiff execution result", async () => {
-    const result = await solBundler(hre);
+  it("should return deploy execution result", async () => {
+    const result = await main(hre);
     expect(result).toEqual({ ctx: "ctx" });
-    expect(mockDeployDiff).toBeCalledWith(hre);
+    expect(mockDeploy).toBeCalledWith(hre);
   });
 });

@@ -1,4 +1,4 @@
-const deployDiff = require("./deployDiff");
+const { deploy } = require("./deploy");
 const PluginsManager = require("./PluginsManager");
 const InternalPlugins = require("./plugins");
 const { getDeployment } = require("./utils");
@@ -8,5 +8,5 @@ module.exports = async function solBundler(hre) {
 
   PluginsManager.registerPlugins(InternalPlugins.concat(plugins));
 
-  return deployDiff(hre);
+  return deploy(hre);
 };

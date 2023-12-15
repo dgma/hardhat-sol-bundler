@@ -1,8 +1,8 @@
-const { identity, composeFromEntires, getDeployment } = require("./utils");
+const { I, composeFromEntires, getDeployment } = require("./utils");
 
-describe("utils: identity", () => {
+describe("utils: I", () => {
   it("should return input", () => {
-    expect(identity(10)).toBe(10);
+    expect(I(10)).toBe(10);
   });
 });
 

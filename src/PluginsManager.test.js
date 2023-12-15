@@ -3,7 +3,7 @@ const PluginsManager = require("./PluginsManager");
 describe("PluginsManager", () => {
   it("should return Hooks object", () => {
     expect(Object.keys(PluginsManager.Hooks)).toEqual([
-      "BEFORE_DEPLOYMENT_INIT",
+      "BEFORE_DEPLOYMENT",
       "BEFORE_CONTRACT_BUILD",
       "BEFORE_CONTRACT_DEPLOY",
       "AFTER_DEPLOYMENT",
