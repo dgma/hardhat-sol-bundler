@@ -19,7 +19,7 @@ module.exports = {
             args: ["hello"],
             options: {
               libs: {
-                TestLibrary: getAddr("TestLibrary"),
+                TestLibrary: (_, ctx) => ctx.TestLibrary.address,
               },
             },
           },
