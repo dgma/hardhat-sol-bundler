@@ -41,49 +41,70 @@ async function createDeploymentContext({ hre, lock, config }) {
 }
 
 const Context = {
-  [PluginsManager.Hooks.BEFORE_DEPLOYMENT]: async (params) => {
-    const { hre } = params;
+  [PluginsManager.Hooks.BEFORE_DEPLOYMENT]: async (hre, state) => {
     const { config, lockfile } = getDeployment(hre);
 
     const lock = lockfile ? getLock(lockfile) : {};
-
-    // mutation
-    params.ctx = await createDeploymentContext({
+    const ctx = await createDeploymentContext({
       hre,
       lock: lock[hre.network.name] || {},
       config,
     });
+    state.update((prevState) => ({ ...prevState, ctx }));
   },
-  [PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY]: async (params) => {
-    const { currentContract } = params;
 
-    // mutation
-    params.ctx[currentContract.name] = {
-      address: await currentContract.contract.getAddress(),
-      interface: currentContract.contract.interface,
-      factoryByteCode: currentContract.factory.bytecode,
-      args: currentContract.constructorArguments,
+  [PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY]: async (
+    _,
+    state,
+    contractState
+  ) => {
+    const ctxUpdate = {
+      [contractState.value().name]: {
+        address: await contractState.value().contract.getAddress(),
+        interface: contractState.value().contract.interface,
+        factoryByteCode: contractState.value().factory.bytecode,
+        args: contractState.value().constructorArguments,
+      },
     };
+
+    state.update((prevState) => ({
+      ...prevState,
+      ctx: {
+        ...prevState.ctx,
+        ...ctxUpdate,
+      },
+    }));
   },
-  [PluginsManager.Hooks.BEFORE_CONTRACT_BUILD]: async (params) => {
-    const { hre, ctx } = params;
+
+  [PluginsManager.Hooks.BEFORE_CONTRACT_BUILD]: async (
+    hre,
+    state,
+    contractState
+  ) => {
+    const ctx = state.value().ctx;
     const { config } = getDeployment(hre);
 
-    const contractConfig = config[params.currentContract.name];
+    const contractConfig = config[contractState.value().name];
 
     if (config) {
-      params.currentContract.factoryOptions = {
+      const factoryOptions = {
         libraries: await getLibrariesDynamically(
           hre,
           ctx,
           contractConfig?.options?.libs
         ),
       };
-      params.currentContract.constructorArguments = await getArgsDynamically(
+      const constructorArguments = await getArgsDynamically(
         hre,
         ctx,
         contractConfig?.args
       );
+
+      contractState.update((prevState) => ({
+        ...prevState,
+        factoryOptions,
+        constructorArguments,
+      }));
     }
   },
 };

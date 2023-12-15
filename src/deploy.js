@@ -86,7 +86,7 @@ async function deploy(hre) {
 
   await PluginsManager.on(PluginsManager.Hooks.AFTER_DEPLOYMENT, hre, state);
 
-  return state;
+  return state.value();
 }
 
 module.exports = {

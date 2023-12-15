@@ -29,8 +29,6 @@ function registerPlugin(plugin) {
 }
 
 function hasHook(pluginHookName, hook) {
-  console.log("pluginHookName", pluginHookName);
-  console.log("hook", hook);
   return (_handlers[pluginHookName] || []).includes(hook);
 }
 

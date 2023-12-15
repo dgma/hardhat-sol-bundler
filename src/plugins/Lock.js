@@ -2,8 +2,8 @@ const fs = require("fs");
 const PluginsManager = require("../PluginsManager");
 const { getLock, getDeployment } = require("../utils");
 
-const Context = {
-  [PluginsManager.Hooks.AFTER_DEPLOYMENT]: ({ hre, ctx }) => {
+const Lock = {
+  [PluginsManager.Hooks.AFTER_DEPLOYMENT]: (hre, state) => {
     const { lockfile } = getDeployment(hre);
 
     if (lockfile) {
@@ -13,7 +13,7 @@ const Context = {
         ...lock,
         [hre.network.name]: {
           ...lock[hre.network.name],
-          ...ctx,
+          ...state.value().ctx,
         },
       };
 
@@ -22,4 +22,4 @@ const Context = {
   },
 };
 
-module.exports = Context;
+module.exports = Lock;
