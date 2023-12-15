@@ -1,10 +1,30 @@
-require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-ethers");
+require("@nomicfoundation/hardhat-chai-matchers");
+
+const getAddr = (contractName) => (_, ctx) => ctx[contractName].address;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.17",
   paths: {
     sources: "./testData",
-    tests: "./integration"
+    tests: "./integration",
+  },
+  networks: {
+    hardhat: {
+      deployment: {
+        config: {
+          TestLibrary: {},
+          TestContract: {
+            args: ["hello"],
+            options: {
+              libs: {
+                TestLibrary: getAddr("TestLibrary"),
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
