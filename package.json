@@ -31,11 +31,12 @@
     "@dogma:registry": "https://npm.pkg.github.com"
   },
   "peerDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "ethers": "^6.9.0",
     "hardhat": "^2.19.2"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
     "jest": "^29.7.0"
   }
 }
