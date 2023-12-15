@@ -7,48 +7,56 @@ const Hooks = {
   AFTER_CONTRACT_DEPLOY: "AFTER_CONTRACT_DEPLOY",
 };
 
-const HooksList = Object.values(Hooks);
+const _hooksList = Object.values(Hooks);
 
-class PluginsManager {
-  Hooks = Hooks;
+const _handlers = {};
 
-  constructor() {
-    this.handlers = {};
-  }
+function handlers() {
+  return _handlers;
+}
 
-  registerPlugins(plugins = []) {
-    plugins.forEach((plugin) => this._registerPlugin(plugin));
-  }
+function registerPlugins(plugins = []) {
+  plugins.forEach(registerPlugin);
+}
 
-  _registerPlugin(plugin) {
-    HooksList.forEach((pluginHookName) => {
-      const hook = plugin[pluginHookName];
-      if (hook && typeof hook === "function") {
-        this._addHandlersToHook(pluginHookName, hook);
-      }
-      return this;
-    });
-  }
-
-  _addHandlersToHook(pluginHookName, hook) {
-    if (this.handlers[pluginHookName]) {
-      this.handlers[pluginHookName].push(hook);
-      return this;
+function registerPlugin(plugin) {
+  _hooksList.forEach((pluginHookName) => {
+    const hook = plugin[pluginHookName];
+    if (hook && typeof hook === "function") {
+      _addHandlersToHook(pluginHookName, hook);
     }
-    this.handlers[pluginHookName] = [hook];
-    return this;
+  });
+}
+
+function hasHook(pluginHookName, hook) {
+  console.log("pluginHookName", pluginHookName);
+  console.log("hook", hook);
+  return (_handlers[pluginHookName] || []).includes(hook);
+}
+
+function _addHandlersToHook(pluginHookName, hook) {
+  if (_handlers[pluginHookName] && !hasHook(pluginHookName, hook)) {
+    _handlers[pluginHookName].push(hook);
+    return;
+  }
+  _handlers[pluginHookName] = [hook];
+}
+
+async function on(hookName, ...args) {
+  if (!_handlers[hookName]) {
+    return;
   }
 
-  async on(hookName, ...args) {
-    if (!this.handlers[hookName]) {
-      return this;
-    }
-
-    for (const hook of this.handlers[hookName]) {
-      await hook(...args);
-    }
-    return this;
+  for (const hook of _handlers[hookName]) {
+    await hook(...args);
   }
 }
 
-module.exports = new PluginsManager();
+module.exports = {
+  Hooks,
+  handlers,
+  registerPlugin,
+  registerPlugins,
+  hasHook,
+  on,
+};

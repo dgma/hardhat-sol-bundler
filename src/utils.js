@@ -23,7 +23,7 @@ const getLock = (lockfileName) => {
 
 const getDeployment = (hre) => {
   return (
-    hre.userConfig.networks[hre.network.name].deployment || {
+    hre?.userConfig?.networks?.[hre.network.name]?.deployment || {
       config: {},
     }
   );
