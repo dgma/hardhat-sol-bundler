@@ -43,7 +43,7 @@ describe("LockPlugin", () => {
         "lockfile",
         JSON.stringify({
           unit: state.value().ctx,
-        })
+        }),
       );
     });
   });

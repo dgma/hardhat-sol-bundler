@@ -27,7 +27,7 @@ describe("PluginsManager", () => {
 
       expect(
         PluginsManager.handlers()[PluginsManager.Hooks.AFTER_CONTRACT_BUILD]
-          .length
+          .length,
       ).toBe(2);
     });
   });
@@ -45,7 +45,7 @@ describe("PluginsManager", () => {
 
       await PluginsManager.on(
         PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
-        "hello"
+        "hello",
       );
 
       expect(spy).toBeCalledTimes(1);

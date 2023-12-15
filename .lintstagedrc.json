@@ -1,0 +1,10 @@
+{
+  "src/**/*.js": [
+    "eslint --fix",
+    "prettier --write"
+  ],
+  "integration/**/*.js": [
+    "eslint --fix",
+    "prettier --write"
+  ]
+}

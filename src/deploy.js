@@ -21,12 +21,12 @@ async function deploy(hre) {
       PluginsManager.Hooks.BEFORE_CONTRACT_BUILD,
       hre,
       state,
-      contractState
+      contractState,
     );
 
     const factory = await hre.ethers.getContractFactory(
       contractState.value().name,
-      contractState.value().factoryOptions
+      contractState.value().factoryOptions,
     );
 
     contractState.update((prevState) => ({
@@ -38,7 +38,7 @@ async function deploy(hre) {
       PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
       hre,
       state,
-      contractState
+      contractState,
     );
 
     const isSameByteCode =
@@ -55,7 +55,7 @@ async function deploy(hre) {
       PluginsManager.Hooks.BEFORE_CONTRACT_DEPLOY,
       hre,
       state,
-      contractState
+      contractState,
     );
 
     const contract = await contractState
@@ -73,7 +73,7 @@ async function deploy(hre) {
       PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY,
       hre,
       state,
-      contractState
+      contractState,
     );
 
     state.update((prevState) => ({

@@ -1,7 +1,4 @@
-const ContextPlugin = require('./Context');
-const LockPlugin = require('./Lock');
+const ContextPlugin = require("./Context");
+const LockPlugin = require("./Lock");
 
-module.exports = [
-  ContextPlugin,
-  LockPlugin
-];
+module.exports = [ContextPlugin, LockPlugin];

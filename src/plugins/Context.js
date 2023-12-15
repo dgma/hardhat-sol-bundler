@@ -56,7 +56,7 @@ const Context = {
   [PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY]: async (
     _,
     state,
-    contractState
+    contractState,
   ) => {
     const ctxUpdate = {
       [contractState.value().name]: {
@@ -79,7 +79,7 @@ const Context = {
   [PluginsManager.Hooks.BEFORE_CONTRACT_BUILD]: async (
     hre,
     state,
-    contractState
+    contractState,
   ) => {
     const ctx = state.value().ctx;
     const { config } = getDeployment(hre);
@@ -91,13 +91,13 @@ const Context = {
         libraries: await getLibrariesDynamically(
           hre,
           ctx,
-          contractConfig?.options?.libs
+          contractConfig?.options?.libs,
         ),
       };
       const constructorArguments = await getArgsDynamically(
         hre,
         ctx,
-        contractConfig?.args
+        contractConfig?.args,
       );
 
       contractState.update((prevState) => ({

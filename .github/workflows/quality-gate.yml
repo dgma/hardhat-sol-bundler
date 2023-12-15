@@ -1,5 +1,3 @@
-
-
 name: quality-gate
 on:
   push:
@@ -9,10 +7,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Install modules
-      run: npm i
-    - name: Run unit tests
-      run: npm run test:unit
-    - name: Run integration tests
-      run: npm run test:integration
+      - uses: actions/checkout@v3
+      - name: Install modules
+        run: npm i
+      - name: Run linitng
+        run: npm run lint
+      - name: Run unit tests
+        run: npm run test:unit
+      - name: Run integration tests
+        run: npm run test:integration

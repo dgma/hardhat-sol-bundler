@@ -8,7 +8,7 @@ const composeFromEntires = (entries = Object.entries({}), valueMapper = I) =>
       ...acc,
       [key]: valueMapper(value),
     }),
-    {}
+    {},
   );
 
 const getLock = (lockfileName) => {

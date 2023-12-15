@@ -47,7 +47,7 @@ describe("ContextPlugin", () => {
             getContractAt: () => ({ interface: "interface" }),
           },
         },
-        state
+        state,
       );
       expect(state.value().ctx).toEqual({
         Contract: {
@@ -100,7 +100,7 @@ describe("ContextPlugin", () => {
       await ContextPlugin[PluginsManager.Hooks.BEFORE_CONTRACT_BUILD](
         hre,
         state,
-        contractState
+        contractState,
       );
       expect(contractState.value()).toEqual({
         name: "Contract2",
@@ -137,7 +137,7 @@ describe("ContextPlugin", () => {
       await ContextPlugin[PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY](
         hre,
         state,
-        contractState
+        contractState,
       );
 
       expect(state.value().ctx).toEqual({

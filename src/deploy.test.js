@@ -102,41 +102,41 @@ describe("deploy", () => {
       1,
       PluginsManager.Hooks.BEFORE_DEPLOYMENT,
       hre,
-      state
+      state,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       2,
       PluginsManager.Hooks.BEFORE_CONTRACT_BUILD,
       hre,
       state,
-      contractState
+      contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       3,
       PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
       hre,
       state,
-      contractState
+      contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       4,
       PluginsManager.Hooks.BEFORE_CONTRACT_DEPLOY,
       hre,
       state,
-      contractState
+      contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       5,
       PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY,
       hre,
       state,
-      contractState
+      contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       6,
       PluginsManager.Hooks.AFTER_DEPLOYMENT,
       hre,
-      state
+      state,
     );
   });
 
