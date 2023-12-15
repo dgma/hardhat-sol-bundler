@@ -1,7 +1,7 @@
-const main = require("./src/main");
+const solBundler = require("./src/main");
 const PluginsManager = require("./src/PluginsManager");
 
 module.exports = {
-  main,
+  solBundler,
   Hooks: PluginsManager.Hooks,
 };

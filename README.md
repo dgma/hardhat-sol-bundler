@@ -5,31 +5,33 @@ sol-bundler tracks contract changes and redeploys only those where any changes w
 ## Installation
 run `npm install @dgma/sol-bundler`
 ## Usage
-1. Create deployment config
+1. Create deployment config in hardhat
 ```js
 module.exports = {
-  // contract key = contract name
-  TestLibrary: {},
-  TestContract: {
-    libs: ["TestLibrary"],
-    // deployment args passed during contract construction.
-    deploymentArgs: ["hello"]
+  networks: {
+    hardhat: {
+      deployment: {
+        // omit lockFile if you want to have a fresh deploy each time
+        lockFile: "deployment-lock.json",
+        config: {
+          TestLibrary: {},
+          TestContract: {
+            args: ["hello"],
+            options: {
+              libs: {
+                TestLibrary: getAddr("TestLibrary"),
+              },
+            },
+          },
+        },
+      },
+    },
   },
-}
+};
 ```
-2. Write deployment script
+3. Write deployment script/task
 ```js
 const { solBundler } = require('@dgma/sol-bundler');
-const deploymentConfig = require('deployment.config');
 
-const deploy = () => solBundler({
-  deploymentConfig,
-})
-```
-In case you want to deploy all contracts each time even if they weren't changed:
-```js
-const deploy = () => solBundler({
-  noLockFile: true,
-  deploymentConfig,
-})
+const deploy = () => solBundler(hre)
 ```
