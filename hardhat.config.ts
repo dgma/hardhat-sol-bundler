@@ -1,10 +1,12 @@
-require("@nomicfoundation/hardhat-ethers");
-require("@nomicfoundation/hardhat-chai-matchers");
+import { type HardhatUserConfig } from "hardhat/config";
+import { type DynamicLibrary } from "./types/deployment";
+import "@nomicfoundation/hardhat-ethers";
 
-const getAddr = (contractName) => (_, ctx) => ctx[contractName].address;
+const getAddr: (contractName: string) => DynamicLibrary =
+  (contractName) => (_, ctx) =>
+    ctx[contractName].address;
 
-/** @type import('hardhat/config').HardhatUserConfig */
-module.exports = {
+const config: HardhatUserConfig = {
   solidity: "0.8.17",
   paths: {
     sources: "./testData",
@@ -28,3 +30,5 @@ module.exports = {
     },
   },
 };
+
+export default config;
