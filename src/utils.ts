@@ -1,6 +1,7 @@
-const fs = require("fs");
+import fs from "fs";
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 
-const I = (val) => val;
+const I = (val: any) => val;
 
 const composeFromEntires = (entries = Object.entries({}), valueMapper = I) =>
   entries.reduce(
@@ -11,14 +12,14 @@ const composeFromEntires = (entries = Object.entries({}), valueMapper = I) =>
     {},
   );
 
-const getLock = (lockfileName) => {
+const getLock = (lockfileName: string) => {
   if (fs.existsSync(lockfileName)) {
     return JSON.parse(fs.readFileSync(lockfileName, { encoding: "utf8" }));
   }
   return {};
 };
 
-const getDeployment = (hre) => {
+const getDeployment = (hre: any) => {
   return (
     hre?.userConfig?.networks?.[hre.network.name]?.deployment || {
       config: {},

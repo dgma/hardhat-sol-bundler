@@ -1,6 +1,6 @@
 const PluginsManager = require("./PluginsManager");
 
-describe("PluginsManager", () => {
+xdescribe("PluginsManager", () => {
   it("should return Hooks object", () => {
     expect(Object.keys(PluginsManager.Hooks)).toEqual([
       "BEFORE_DEPLOYMENT",

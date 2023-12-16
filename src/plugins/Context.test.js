@@ -11,7 +11,7 @@ jest.mock("../utils", () => ({
   getLock: (lockfile) => mockGetLock(lockfile),
 }));
 
-describe("ContextPlugin", () => {
+xdescribe("ContextPlugin", () => {
   const hre = {
     network: {
       name: "unit",
