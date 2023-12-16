@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import 'hardhat/types/runtime';
+import "hardhat/types/runtime";
 import "hardhat/types/config";
-import { type DeploymentConfig } from "./deployment";
+import { type IDeploymentConfig } from "./deployment";
 // import {EthereumProvider} from 'hardhat/types';
 
 declare module "hardhat/types/config" {
+
   interface HardhatNetworkUserConfig {
     chainId?: number;
     from?: string;
@@ -27,6 +28,19 @@ declare module "hardhat/types/config" {
     coinbase?: string;
     chains?: HardhatNetworkChainsUserConfig;
     enableTransientStorage?: boolean;
-    deployment?: DeploymentConfig;
+    deployment?: IDeploymentConfig;
+  }
+
+  export interface HttpNetworkUserConfig {
+    chainId?: number;
+    from?: string;
+    gas?: "auto" | number;
+    gasPrice?: "auto" | number;
+    gasMultiplier?: number;
+    url?: string;
+    timeout?: number;
+    httpHeaders?: { [name: string]: string };
+    accounts?: HttpNetworkAccountsUserConfig;
+    deployment?: IDeploymentConfig;
   }
 }

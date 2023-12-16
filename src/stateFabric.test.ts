@@ -1,6 +1,6 @@
-const stateFabric = require("./stateFabric");
+import * as stateFabric from "./stateFabric";
 
-xdescribe("stateFabric", () => {
+describe("stateFabric", () => {
   it("should create state", () => {
     const state = stateFabric.create({ x: "y" });
     expect(state.value()).toEqual({ x: "y" });

@@ -1,5 +1,12 @@
-const { deploy } = require("./deploy");
-const PluginsManager = require("./PluginsManager");
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { ConstructorArgument } from "../types/deployment";
+import {
+  type IGlobalState,
+  type IDeployingContractState,
+} from "../types/state";
+import { deploy } from "./deploy";
+import * as PluginsManager from "./PluginsManager";
+import { type IState } from "./stateFabric";
 
 const mockGetDeployment = jest.fn();
 const mockOn = jest.fn();
@@ -10,14 +17,19 @@ jest.mock("./stateFabric", () => ({
 }));
 
 jest.mock("./utils", () => ({
-  getDeployment: (hre) => mockGetDeployment(hre),
+  getDeployment: () => mockGetDeployment(),
 }));
 jest.mock("./PluginsManager", () => ({
   ...jest.requireActual("./PluginsManager"),
-  on: async (...args) => mockOn(...args),
+  on: async (
+    hookName: PluginsManager.HookKeys,
+    hre: Partial<HardhatRuntimeEnvironment>,
+    state?: IState<IGlobalState>,
+    contractState?: IState<IDeployingContractState>,
+  ) => mockOn(hookName, hre, state, contractState),
 }));
 
-xdescribe("deploy", () => {
+describe("deploy", () => {
   const mockUpdateState = jest.fn();
   const mockUpdateContractState = jest.fn();
   const mockWaitForDeployment = jest.fn();
@@ -39,10 +51,10 @@ xdescribe("deploy", () => {
     ethers: {
       getContractFactory: mockGetContractFactory,
     },
-  };
+  } as any;
   const name = "ContractName";
   const factoryOptions = {};
-  const constructorArguments = [];
+  const constructorArguments: ConstructorArgument[] = [];
 
   const state = {
     value: () => ({
@@ -88,7 +100,7 @@ xdescribe("deploy", () => {
       .mockImplementationOnce(() => state)
       .mockImplementationOnce(() => contractState);
     await deploy(hre);
-    expect(mockGetContractFactory).toBeCalledWith(name, factoryOptions);
+    expect(mockGetContractFactory).toHaveBeenCalledWith(name, factoryOptions);
   });
 
   it("should call plugin lifecycle hooks during deployment", async () => {
@@ -103,6 +115,7 @@ xdescribe("deploy", () => {
       PluginsManager.Hooks.BEFORE_DEPLOYMENT,
       hre,
       state,
+      undefined,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       2,
@@ -137,6 +150,7 @@ xdescribe("deploy", () => {
       PluginsManager.Hooks.AFTER_DEPLOYMENT,
       hre,
       state,
+      undefined,
     );
   });
 
@@ -160,8 +174,8 @@ xdescribe("deploy", () => {
       .mockImplementationOnce(() => contractState);
 
     await deploy(hre);
-    expect(mockGetContractFactory).toBeCalled();
-    expect(mockContractDeploy).not.toBeCalled();
+    expect(mockGetContractFactory).toHaveBeenCalled();
+    expect(mockContractDeploy).not.toHaveBeenCalled();
   });
 
   it("should not deploy already deployed contract if constructor arguments has changed", async () => {
@@ -184,7 +198,7 @@ xdescribe("deploy", () => {
       .mockImplementationOnce(() => contractState);
 
     await deploy(hre);
-    expect(mockGetContractFactory).toBeCalled();
-    expect(mockContractDeploy).toBeCalledWith(...constructorArguments);
+    expect(mockGetContractFactory).toHaveBeenCalled();
+    expect(mockContractDeploy).toHaveBeenCalledWith(...constructorArguments);
   });
 });

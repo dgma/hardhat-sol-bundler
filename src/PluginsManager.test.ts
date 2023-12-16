@@ -1,6 +1,6 @@
-const PluginsManager = require("./PluginsManager");
+import * as PluginsManager from "./PluginsManager";
 
-xdescribe("PluginsManager", () => {
+describe("PluginsManager", () => {
   it("should return Hooks object", () => {
     expect(Object.keys(PluginsManager.Hooks)).toEqual([
       "BEFORE_DEPLOYMENT",
@@ -35,7 +35,7 @@ xdescribe("PluginsManager", () => {
   describe("calling", () => {
     it("should call subscribed callbacks", async () => {
       const spy = jest.fn();
-      const fn1 = async (...args) => {
+      const fn1 = async (...args: any[]) => {
         spy(...args);
       };
       const plugin = {
@@ -43,13 +43,10 @@ xdescribe("PluginsManager", () => {
       };
       PluginsManager.registerPlugin(plugin);
 
-      await PluginsManager.on(
-        PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
-        "hello",
-      );
+      await PluginsManager.on(PluginsManager.Hooks.AFTER_CONTRACT_BUILD, {});
 
-      expect(spy).toBeCalledTimes(1);
-      expect(spy).toBeCalledWith("hello");
+      expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenCalledWith({}, undefined, undefined);
     });
   });
 });

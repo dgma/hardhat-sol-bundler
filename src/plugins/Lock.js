@@ -12,7 +12,6 @@ const Lock = {
       const newLock = {
         ...lock,
         [hre.network.name]: {
-          ...lock[hre.network.name],
           ...state.value().ctx,
         },
       };

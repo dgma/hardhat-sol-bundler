@@ -1,9 +1,16 @@
 import fs from "fs";
-import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import {
+  type HardhatNetworkUserConfig,
+  type HttpNetworkUserConfig,
+} from "hardhat/types/config";
+import { type IDeploymentConfig, type ILock } from "../types/deployment";
 
-const I = (val: any) => val;
+export const I: <T>(val: T) => T = (val) => val;
 
-const composeFromEntires = (entries = Object.entries({}), valueMapper = I) =>
+export const composeFromEntires: <T>(
+  entries: [string, any][] | undefined,
+  valueMapper: (val: any) => T,
+) => { [key: string]: T } = (entries = Object.entries({}), valueMapper = I) =>
   entries.reduce(
     (acc, [key, value]) => ({
       ...acc,
@@ -12,24 +19,33 @@ const composeFromEntires = (entries = Object.entries({}), valueMapper = I) =>
     {},
   );
 
-const getLock = (lockfileName: string) => {
+export const getLock: (lockfileName: string) => ILock = (lockfileName) => {
   if (fs.existsSync(lockfileName)) {
     return JSON.parse(fs.readFileSync(lockfileName, { encoding: "utf8" }));
   }
   return {};
 };
 
-const getDeployment = (hre: any) => {
+export interface ILimitedHardhatRuntimeEnvironment {
+  network: {
+    name: string;
+  };
+  userConfig: {
+    networks?: {
+      [network: string]:
+        | HardhatNetworkUserConfig
+        | HttpNetworkUserConfig
+        | undefined;
+    };
+  };
+}
+
+export const getDeployment: (
+  hre: ILimitedHardhatRuntimeEnvironment,
+) => IDeploymentConfig = (hre) => {
   return (
-    hre?.userConfig?.networks?.[hre.network.name]?.deployment || {
+    hre.userConfig.networks?.[hre.network.name]?.deployment ?? {
       config: {},
     }
   );
-};
-
-module.exports = {
-  I,
-  composeFromEntires,
-  getLock,
-  getDeployment,
 };

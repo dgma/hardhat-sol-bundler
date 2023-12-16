@@ -22,31 +22,20 @@ const getArgsDynamically = async (hre, ctx, args = []) => {
   return Promise.all(argsRequests);
 };
 
-async function createDeploymentContext({ hre, lock, config }) {
-  const promises = Object.entries(lock)
+function createDeploymentContext({ lock, config }) {
+  const result = Object.entries(lock)
     // remove those who was deleted from config
-    .filter(([contractKey]) => !!config[contractKey])
-    .map(async ([contract, value]) => [
-      contract,
-      {
-        ...value,
-        interface: (await hre.ethers.getContractAt(contract, value.address))
-          .interface,
-      },
-    ]);
-
-  const result = await Promise.all(promises);
+    .filter(([contractKey]) => !!config[contractKey]);
 
   return composeFromEntires(result);
 }
 
 const Context = {
-  [PluginsManager.Hooks.BEFORE_DEPLOYMENT]: async (hre, state) => {
+  [PluginsManager.Hooks.BEFORE_DEPLOYMENT]: (hre, state) => {
     const { config, lockfile } = getDeployment(hre);
 
     const lock = lockfile ? getLock(lockfile) : {};
-    const ctx = await createDeploymentContext({
-      hre,
+    const ctx = createDeploymentContext({
       lock: lock[hre.network.name] || {},
       config,
     });

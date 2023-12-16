@@ -11,7 +11,7 @@
     "test:unit": "jest",
     "test:integration": "hardhat test",
     "compile": "hardhat compile",
-    "lint": "eslint src/**/*.js integration/**/*.js",
+    "lint": "eslint src/**/*.ts integration/**/*.ts",
     "prepare": "husky install"
   },
   "repository": {

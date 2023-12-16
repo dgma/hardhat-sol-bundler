@@ -1,17 +1,24 @@
-const PluginsManager = require("./PluginsManager");
-const { getDeployment } = require("./utils");
-const stateFabric = require("./stateFabric");
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import {
+  type IGlobalState,
+  type IDeployingContractState,
+} from "../types/state";
+import * as PluginsManager from "./PluginsManager";
+import * as stateFabric from "./stateFabric";
+import { getDeployment, type ILimitedHardhatRuntimeEnvironment } from "./utils";
 
-async function deploy(hre) {
-  const state = stateFabric.create({
+export async function deploy(hre: Partial<HardhatRuntimeEnvironment>) {
+  const state = stateFabric.create<IGlobalState>({
     ctx: {},
     deployedContracts: [],
   });
 
   await PluginsManager.on(PluginsManager.Hooks.BEFORE_DEPLOYMENT, hre, state);
 
-  for (const contractToDeploy of Object.keys(getDeployment(hre).config)) {
-    const contractState = stateFabric.create({
+  for (const contractToDeploy of Object.keys(
+    getDeployment(hre as ILimitedHardhatRuntimeEnvironment).config,
+  )) {
+    const contractState = stateFabric.create<IDeployingContractState>({
       name: contractToDeploy,
       factoryOptions: {},
       constructorArguments: [],
@@ -24,7 +31,7 @@ async function deploy(hre) {
       contractState,
     );
 
-    const factory = await hre.ethers.getContractFactory(
+    const factory = await hre?.ethers?.getContractFactory(
       contractState.value().name,
       contractState.value().factoryOptions,
     );
@@ -42,7 +49,7 @@ async function deploy(hre) {
     );
 
     const isSameByteCode =
-      contractState.value().factory.bytecode ===
+      contractState.value()?.factory?.bytecode ===
       state.value().ctx[contractToDeploy]?.factoryByteCode;
 
     const isSameArguments =
@@ -60,9 +67,9 @@ async function deploy(hre) {
 
     const contract = await contractState
       .value()
-      .factory.deploy(...contractState.value().constructorArguments);
+      ?.factory?.deploy(...contractState.value().constructorArguments);
 
-    await contract.waitForDeployment();
+    await contract?.waitForDeployment();
 
     contractState.update((prevState) => ({
       ...prevState,
@@ -88,7 +95,3 @@ async function deploy(hre) {
 
   return state.value();
 }
-
-module.exports = {
-  deploy,
-};

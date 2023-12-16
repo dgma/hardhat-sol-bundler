@@ -1,4 +1,9 @@
-const { I, composeFromEntires, getDeployment } = require("./utils");
+import {
+  I,
+  composeFromEntires,
+  getDeployment,
+  ILimitedHardhatRuntimeEnvironment,
+} from "./utils";
 
 describe("utils: I", () => {
   it("should return input", () => {
@@ -25,14 +30,23 @@ describe("composeFromEntires", () => {
 
 describe("getDeployment", () => {
   it("should return deployment with empty config by default", () => {
-    expect(getDeployment({}).config).toEqual({});
+    expect(
+      getDeployment({
+        network: {
+          name: "hardhat",
+        },
+        userConfig: { networks: {} },
+      }).config,
+    ).toEqual({});
   });
 
   it("should return deployment for network", () => {
     const hardhatDeploymentMockConfig = {
-      key: "hardhatDeploymentMockConfig",
+      SomeContract: {
+        args: ["hardhatDeploymentMockConfig"],
+      },
     };
-    const mockHre = {
+    const mockHre: ILimitedHardhatRuntimeEnvironment = {
       network: {
         name: "hardhat",
       },
@@ -46,7 +60,9 @@ describe("getDeployment", () => {
           random: {
             deployment: {
               config: {
-                key: "random",
+                config: {
+                  OtherContract: {},
+                },
               },
             },
           },
