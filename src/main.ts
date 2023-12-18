@@ -1,7 +1,7 @@
-const { deploy } = require("./deploy");
-const PluginsManager = require("./PluginsManager");
-const InternalPlugins = require("./plugins");
-const { getDeployment } = require("./utils");
+import { deploy } from "./deploy";
+import InternalPlugins from "./plugins";
+import * as PluginsManager from "./PluginsManager";
+import { getDeployment } from "./utils";
 
 module.exports = async function solBundler(hre) {
   const plugins = getDeployment(hre)?.plugins || [];

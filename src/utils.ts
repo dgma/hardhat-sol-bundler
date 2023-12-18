@@ -3,14 +3,19 @@ import {
   type HardhatNetworkUserConfig,
   type HttpNetworkUserConfig,
 } from "hardhat/types/config";
-import { type IDeploymentConfig, type ILock } from "../types/deployment";
+import { type IDeploymentConfig, type Lock } from "../types/deployment";
 
 export const I: <T>(val: T) => T = (val) => val;
 
-export const composeFromEntires: <T>(
+type ComposeFromEntires = <T>(
   entries: [string, any][] | undefined,
-  valueMapper: (val: any) => T,
-) => { [key: string]: T } = (entries = Object.entries({}), valueMapper = I) =>
+  valueMapper?: (val: any) => T,
+) => { [key: string]: T };
+
+export const composeFromEntires: ComposeFromEntires = (
+  entries = Object.entries({}),
+  valueMapper = I,
+) =>
   entries.reduce(
     (acc, [key, value]) => ({
       ...acc,
@@ -19,7 +24,7 @@ export const composeFromEntires: <T>(
     {},
   );
 
-export const getLock: (lockfileName: string) => ILock = (lockfileName) => {
+export const getLock: (lockfileName: string) => Lock = (lockfileName) => {
   if (fs.existsSync(lockfileName)) {
     return JSON.parse(fs.readFileSync(lockfileName, { encoding: "utf8" }));
   }

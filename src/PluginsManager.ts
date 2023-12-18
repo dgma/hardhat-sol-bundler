@@ -32,12 +32,12 @@ interface IHandlersMap {
 }
 
 export interface IPlugin {
-  [Hooks.BEFORE_DEPLOYMENT]?: () => void;
-  [Hooks.BEFORE_CONTRACT_BUILD]?: () => void;
-  [Hooks.BEFORE_CONTRACT_DEPLOY]?: () => void;
-  [Hooks.AFTER_DEPLOYMENT]?: () => void;
-  [Hooks.AFTER_CONTRACT_BUILD]?: () => void;
-  [Hooks.AFTER_CONTRACT_DEPLOY]?: () => void;
+  [Hooks.BEFORE_DEPLOYMENT]?: HookFn;
+  [Hooks.BEFORE_CONTRACT_BUILD]?: HookFn;
+  [Hooks.BEFORE_CONTRACT_DEPLOY]?: HookFn;
+  [Hooks.AFTER_DEPLOYMENT]?: HookFn;
+  [Hooks.AFTER_CONTRACT_BUILD]?: HookFn;
+  [Hooks.AFTER_CONTRACT_DEPLOY]?: HookFn;
 }
 
 const _handlers: IHandlersMap = {
