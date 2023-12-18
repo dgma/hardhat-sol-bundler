@@ -1,8 +1,7 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import * as PluginsManager from "../PluginsManager";
-import { type IState } from "../stateFabric";
-import { type DeploymentContext } from "../declarations/deployment";
-import { type IGlobalState } from "../declarations/state";
+import { Hooks } from "../../plugins";
+import { type IState } from "../../state";
+import { type IGlobalState, type DeploymentContext } from "../types";
 import { default as LockPlugin } from "./Lock";
 
 const mockGetDeployment = jest.fn(() => ({}));
@@ -25,7 +24,7 @@ describe("LockPlugin", () => {
     },
     userConfig: {},
   } as HardhatRuntimeEnvironment;
-  describe(`on ${PluginsManager.Hooks.AFTER_DEPLOYMENT}`, () => {
+  describe(`on ${Hooks.AFTER_DEPLOYMENT}`, () => {
     const Contract = {
       address: "0xcontract",
       interface: [],
@@ -42,7 +41,7 @@ describe("LockPlugin", () => {
       update: () => {},
     } as IState<IGlobalState>;
     it("should not update lock file if disabled", async () => {
-      await LockPlugin[PluginsManager.Hooks.AFTER_DEPLOYMENT](hre, state);
+      await LockPlugin[Hooks.AFTER_DEPLOYMENT](hre, state);
       expect(mockGetLock).not.toHaveBeenCalled();
       expect(mockSave).not.toHaveBeenCalled();
     });
@@ -50,14 +49,14 @@ describe("LockPlugin", () => {
       const mockLock = {};
       mockGetLock.mockImplementation(() => mockLock);
       mockGetDeployment.mockImplementation(() => ({
-        lockfile: "lockfile",
+        lockFile: "lockFile",
       }));
 
-      await LockPlugin[PluginsManager.Hooks.AFTER_DEPLOYMENT](hre, state);
+      await LockPlugin[Hooks.AFTER_DEPLOYMENT](hre, state);
 
-      expect(mockGetLock).toHaveBeenCalledWith("lockfile");
+      expect(mockGetLock).toHaveBeenCalledWith("lockFile");
       expect(mockSave).toHaveBeenCalledWith(
-        "lockfile",
+        "lockFile",
         JSON.stringify({
           unit: state.value().ctx,
         }),

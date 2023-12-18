@@ -1,6 +1,7 @@
 import { type FactoryOptions } from "@nomicfoundation/hardhat-ethers/types";
 import type * as ethers from "ethers";
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { type IPlugin } from "../plugins";
 
 export type ConstructorArgument = number | string | object;
 
@@ -29,7 +30,7 @@ export type Lib = Record<string, string | DynamicLibrary>;
 
 export interface IDeploymentConfig {
   lockFile?: string;
-  plugins?: any[];
+  plugins?: IPlugin[];
   config: {
     [name: string]: {
       args?: (ConstructorArgument | DynamicConstructorArgument)[];

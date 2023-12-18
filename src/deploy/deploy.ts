@@ -4,7 +4,7 @@ import * as stateFabric from "../state";
 import { type IGlobalState, type IDeployingContractState } from "./types";
 import { getDeployment, type ILimitedHardhatRuntimeEnvironment } from "./utils";
 
-export async function deploy(hre: HardhatRuntimeEnvironment) {
+export default async function deploy(hre: HardhatRuntimeEnvironment) {
   const state = stateFabric.create<IGlobalState>({
     ctx: {},
     deployedContracts: [],

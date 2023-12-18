@@ -1,12 +1,12 @@
 import fs from "fs";
-import * as PluginsManager from "../PluginsManager";
+import { Hooks, type HookFn } from "../../plugins";
 import {
   getLock,
   getDeployment,
   type ILimitedHardhatRuntimeEnvironment,
 } from "../utils";
 
-const afterDeployment: PluginsManager.HookFn = async (hre, state) => {
+const afterDeployment: HookFn = async (hre, state) => {
   const { lockFile } = getDeployment(hre as ILimitedHardhatRuntimeEnvironment);
 
   if (lockFile) {
@@ -24,5 +24,5 @@ const afterDeployment: PluginsManager.HookFn = async (hre, state) => {
 };
 
 export default {
-  [PluginsManager.Hooks.AFTER_DEPLOYMENT]: afterDeployment,
+  [Hooks.AFTER_DEPLOYMENT]: afterDeployment,
 };

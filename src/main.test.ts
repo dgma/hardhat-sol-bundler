@@ -1,42 +1,45 @@
-const main = require("./main");
-const { A } = require("./utils");
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { default as solBundler } from "./main";
+import { type IPlugin } from "./plugins";
 
-const mockGetDeployment = jest.fn(() => ({
-  plugins: ["customPlugin"],
+const plugin: IPlugin = {};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockGetDeployment = jest.fn((_: HardhatRuntimeEnvironment) => ({
+  plugins: [plugin],
 }));
 const mockRegisterPlugins = jest.fn();
-const mockDeploy = jest.fn(() => ({ ctx: "ctx" }));
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mockDeploy = jest.fn((hre: HardhatRuntimeEnvironment) => ({
+  ctx: "ctx",
+}));
 
-jest.mock("./utils", () => ({
-  getDeployment: (...args) => mockGetDeployment(...args),
-}));
-jest.mock("./plugins", () => ["plugin1", "plugin2"]);
-jest.mock("./PluginsManager", () => ({
-  registerPlugins: (...args) => mockRegisterPlugins(...args),
-}));
 jest.mock("./deploy", () => ({
-  deploy: (...args) => mockDeploy(...args),
+  getDeployment: (hre: HardhatRuntimeEnvironment) => mockGetDeployment(hre),
+  deploy: (hre: HardhatRuntimeEnvironment) => mockDeploy(hre),
+  internalPlugins: [],
+}));
+jest.mock("./plugins", () => ({
+  PluginsManager: {
+    registerPlugins: (plugins: IPlugin[]) => mockRegisterPlugins(plugins),
+  },
 }));
 
-xdescribe("main", () => {
-  const hre = {};
+describe("main", () => {
+  const hre = {} as HardhatRuntimeEnvironment;
 
   it("should read plugins from config", async () => {
-    await main(hre);
-    expect(mockGetDeployment).toBeCalledWith(hre);
+    await solBundler(hre);
+    expect(mockGetDeployment).toHaveBeenCalledWith(hre);
   });
   it("should register plugins with internal first", async () => {
-    await main(hre);
-    expect(mockRegisterPlugins).toBeCalledWith([
-      "plugin1",
-      "plugin2",
-      "customPlugin",
-    ]);
+    await solBundler(hre);
+    expect(mockRegisterPlugins).toHaveBeenCalledWith([plugin]);
   });
 
   it("should return deploy execution result", async () => {
-    const result = await main(hre);
+    const result = await solBundler(hre);
     expect(result).toEqual({ ctx: "ctx" });
-    expect(mockDeploy).toBeCalledWith(hre);
+    expect(mockDeploy).toHaveBeenCalledWith(hre);
   });
 });

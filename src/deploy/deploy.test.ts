@@ -1,7 +1,7 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 import { Hooks, type HookKeys } from "../plugins";
 import { type IState } from "../state";
-import { deploy } from "./deploy";
+import { default as deploy } from "./deploy";
 import {
   type IGlobalState,
   type IDeployingContractState,
@@ -93,7 +93,7 @@ describe("deploy", () => {
 
     await deploy(hre);
 
-    expect(mockGetContractFactory).not.toBeCalled();
+    expect(mockGetContractFactory).not.toHaveBeenCalled();
   });
 
   it("should call factory for contract deployment initiation", async () => {

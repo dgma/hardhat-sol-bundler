@@ -2,17 +2,18 @@
   "name": "@dgma/sol-bundler",
   "version": "0.1.0",
   "description": "Declarative deployment tool for smart contracts",
-  "main": "index.js",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "files": [
-    "src",
-    "index.js"
+    "dist"
   ],
   "scripts": {
     "test:unit": "jest",
     "test:integration": "hardhat test",
     "compile": "hardhat compile",
     "lint": "eslint src/**/*.ts integration/**/*.ts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "tsc --excludeFiles **/*.test.ts"
   },
   "repository": {
     "type": "git",

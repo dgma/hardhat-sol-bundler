@@ -1,12 +1,11 @@
-import { deploy } from "./deploy";
-import InternalPlugins from "./plugins";
-import * as PluginsManager from "./PluginsManager";
-import { getDeployment } from "./utils";
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { deploy, getDeployment, internalPlugins } from "./deploy";
+import { PluginsManager } from "./plugins";
 
-module.exports = async function solBundler(hre) {
+export default async function solBundler(hre: HardhatRuntimeEnvironment) {
   const plugins = getDeployment(hre)?.plugins || [];
 
-  PluginsManager.registerPlugins(InternalPlugins.concat(plugins));
+  PluginsManager.registerPlugins(internalPlugins.concat(plugins));
 
   return deploy(hre);
 };

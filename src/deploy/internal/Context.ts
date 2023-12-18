@@ -1,5 +1,5 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import * as PluginsManager from "../PluginsManager";
+import { Hooks, type HookFn } from "../../plugins";
 import {
   type DeploymentContext,
   type Lib,
@@ -7,7 +7,7 @@ import {
   type DynamicConstructorArgument,
   type ILockContract,
   type IDeploymentConfig,
-} from "../declarations/deployment";
+} from "../types";
 import {
   getLock,
   getDeployment,
@@ -59,7 +59,7 @@ async function createDeploymentContext({
     const contract = lock[contractKey];
     if (config[contractKey]) {
       ctx[contractKey] = {
-        ...config[contractKey],
+        ...contract,
         interface: (
           await hre.ethers.getContractAt(
             contractKey,
@@ -73,25 +73,22 @@ async function createDeploymentContext({
   return ctx;
 }
 
-const beforeDeployment: PluginsManager.HookFn = async (hre, state) => {
+const beforeDeployment: HookFn = async (hre, state) => {
   const { config, lockFile } = getDeployment(
     hre as ILimitedHardhatRuntimeEnvironment,
   );
 
-  const lock = lockFile ? getLock(lockFile) : {};
+  const lock = lockFile ? getLock(lockFile)[hre.network.name] : {};
+
   const ctx = await createDeploymentContext({
     hre,
-    lock: lock[hre?.network?.name as string],
+    lock,
     config,
   });
   state?.update((prevState) => ({ ...prevState, ctx }));
 };
 
-const afterContractDeploy: PluginsManager.HookFn = async (
-  _,
-  state,
-  contractState,
-) => {
+const afterContractDeploy: HookFn = async (_, state, contractState) => {
   const cst = contractState?.value();
   if (cst) {
     const ctxUpdate: Partial<ILockContract> = {
@@ -111,11 +108,7 @@ const afterContractDeploy: PluginsManager.HookFn = async (
   }
 };
 
-const beforeContractBuild: PluginsManager.HookFn = async (
-  hre,
-  state,
-  contractState,
-) => {
+const beforeContractBuild: HookFn = async (hre, state, contractState) => {
   const ctx = state?.value().ctx;
   const { config } = getDeployment(hre as ILimitedHardhatRuntimeEnvironment);
 
@@ -144,9 +137,9 @@ const beforeContractBuild: PluginsManager.HookFn = async (
 };
 
 export default {
-  [PluginsManager.Hooks.BEFORE_DEPLOYMENT]: beforeDeployment,
+  [Hooks.BEFORE_DEPLOYMENT]: beforeDeployment,
 
-  [PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY]: afterContractDeploy,
+  [Hooks.AFTER_CONTRACT_DEPLOY]: afterContractDeploy,
 
-  [PluginsManager.Hooks.BEFORE_CONTRACT_BUILD]: beforeContractBuild,
+  [Hooks.BEFORE_CONTRACT_BUILD]: beforeContractBuild,
 };
