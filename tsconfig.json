@@ -7,6 +7,6 @@
     "outDir": "dist",
     "declaration": true
   },
-  "include": ["./src", "./integration", "./types"],
+  "include": ["./src", "./integration", "src/declarations"],
   "files": ["./hardhat.config.ts"]
 }

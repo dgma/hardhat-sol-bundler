@@ -1,3 +1,4 @@
+import { type FactoryOptions } from "@nomicfoundation/hardhat-ethers/types";
 import type * as ethers from "ethers";
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 
@@ -28,14 +29,26 @@ export type Lib = Record<string, string | DynamicLibrary>;
 
 export interface IDeploymentConfig {
   lockFile?: string;
+  plugins?: any[];
   config: {
-    [name: string]:
-      | {
-          args?: (ConstructorArgument | DynamicConstructorArgument)[];
-          options?: {
-            libs?: Lib;
-          };
-        }
-      | {};
+    [name: string]: {
+      args?: (ConstructorArgument | DynamicConstructorArgument)[];
+      options?: {
+        libs?: Lib;
+      };
+    };
   };
+}
+
+export interface IGlobalState {
+  ctx: DeploymentContext;
+  deployedContracts: string[];
+}
+
+export interface IDeployingContractState extends ILockContract {
+  name: string;
+  factoryOptions: FactoryOptions;
+  constructorArguments: ConstructorArgument[];
+  factory?: ethers.ContractFactory<any[], ethers.Contract>;
+  contract?: ethers.Contract;
 }

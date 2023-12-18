@@ -1,32 +1,4 @@
-import {
-  I,
-  composeFromEntires,
-  getDeployment,
-  ILimitedHardhatRuntimeEnvironment,
-} from "./utils";
-
-describe("utils: I", () => {
-  it("should return input", () => {
-    expect(I(10)).toBe(10);
-  });
-});
-
-describe("composeFromEntires", () => {
-  it("should run passed function and update each value for object values", () => {
-    const modifier = jest.fn((num) => num + 2);
-    const input = Object.entries({
-      a: 10,
-      b: 20,
-    });
-    const output = {
-      a: 12,
-      b: 22,
-    };
-
-    expect(composeFromEntires(input, modifier)).toEqual(output);
-    expect(modifier).toHaveBeenCalledTimes(2);
-  });
-});
+import { getDeployment, type ILimitedHardhatRuntimeEnvironment } from "./utils";
 
 describe("getDeployment", () => {
   it("should return deployment with empty config by default", () => {
@@ -60,9 +32,7 @@ describe("getDeployment", () => {
           random: {
             deployment: {
               config: {
-                config: {
-                  OtherContract: {},
-                },
+                OtherContract: {},
               },
             },
           },

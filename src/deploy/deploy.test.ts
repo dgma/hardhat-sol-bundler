@@ -1,32 +1,34 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { ConstructorArgument } from "../types/deployment";
+import { Hooks, type HookKeys } from "../plugins";
+import { type IState } from "../state";
+import { deploy } from "./deploy";
 import {
   type IGlobalState,
   type IDeployingContractState,
-} from "../types/state";
-import { deploy } from "./deploy";
-import * as PluginsManager from "./PluginsManager";
-import { type IState } from "./stateFabric";
+  type ConstructorArgument,
+} from "./types";
 
 const mockGetDeployment = jest.fn();
 const mockOn = jest.fn();
 const mockCreate = jest.fn();
 
-jest.mock("./stateFabric", () => ({
+jest.mock("../state", () => ({
   create: () => mockCreate(),
 }));
 
 jest.mock("./utils", () => ({
   getDeployment: () => mockGetDeployment(),
 }));
-jest.mock("./PluginsManager", () => ({
-  ...jest.requireActual("./PluginsManager"),
-  on: async (
-    hookName: PluginsManager.HookKeys,
-    hre: Partial<HardhatRuntimeEnvironment>,
-    state?: IState<IGlobalState>,
-    contractState?: IState<IDeployingContractState>,
-  ) => mockOn(hookName, hre, state, contractState),
+jest.mock("../plugins", () => ({
+  ...jest.requireActual("../plugins"),
+  PluginsManager: {
+    on: async (
+      hookName: HookKeys,
+      hre: Partial<HardhatRuntimeEnvironment>,
+      state?: IState<IGlobalState>,
+      contractState?: IState<IDeployingContractState>,
+    ) => mockOn(hookName, hre, state, contractState),
+  },
 }));
 
 describe("deploy", () => {
@@ -112,42 +114,42 @@ describe("deploy", () => {
 
     expect(mockOn).toHaveBeenNthCalledWith(
       1,
-      PluginsManager.Hooks.BEFORE_DEPLOYMENT,
+      Hooks.BEFORE_DEPLOYMENT,
       hre,
       state,
       undefined,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       2,
-      PluginsManager.Hooks.BEFORE_CONTRACT_BUILD,
+      Hooks.BEFORE_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       3,
-      PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
+      Hooks.AFTER_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       4,
-      PluginsManager.Hooks.BEFORE_CONTRACT_DEPLOY,
+      Hooks.BEFORE_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       5,
-      PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY,
+      Hooks.AFTER_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       6,
-      PluginsManager.Hooks.AFTER_DEPLOYMENT,
+      Hooks.AFTER_DEPLOYMENT,
       hre,
       state,
       undefined,

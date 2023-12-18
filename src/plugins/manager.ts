@@ -1,44 +1,15 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { type IGlobalState, type IDeployingContractState } from "../deploy";
+import { type IState } from "../state/types";
+import { Hooks } from "./constants";
 import {
-  type IGlobalState,
-  type IDeployingContractState,
-} from "../types/state";
-import { type IState } from "./stateFabric";
-
-export const Hooks = {
-  BEFORE_DEPLOYMENT: "BEFORE_DEPLOYMENT",
-  BEFORE_CONTRACT_BUILD: "BEFORE_CONTRACT_BUILD",
-  BEFORE_CONTRACT_DEPLOY: "BEFORE_CONTRACT_DEPLOY",
-  AFTER_DEPLOYMENT: "AFTER_DEPLOYMENT",
-  AFTER_CONTRACT_BUILD: "AFTER_CONTRACT_BUILD",
-  AFTER_CONTRACT_DEPLOY: "AFTER_CONTRACT_DEPLOY",
-} as const;
+  type IHandlersMap,
+  type IPlugin,
+  type HookKeys,
+  type HookFn,
+} from "./types";
 
 const _hooksList = Object.values(Hooks);
-
-export type HookKeys = keyof typeof Hooks;
-type HookFn = (
-  hre: Partial<HardhatRuntimeEnvironment>,
-  state?: IState<IGlobalState>,
-  contractState?: IState<IDeployingContractState>,
-) => void;
-interface IHandlersMap {
-  [Hooks.BEFORE_DEPLOYMENT]: HookFn[];
-  [Hooks.BEFORE_CONTRACT_BUILD]: HookFn[];
-  [Hooks.BEFORE_CONTRACT_DEPLOY]: HookFn[];
-  [Hooks.AFTER_DEPLOYMENT]: HookFn[];
-  [Hooks.AFTER_CONTRACT_BUILD]: HookFn[];
-  [Hooks.AFTER_CONTRACT_DEPLOY]: HookFn[];
-}
-
-export interface IPlugin {
-  [Hooks.BEFORE_DEPLOYMENT]?: HookFn;
-  [Hooks.BEFORE_CONTRACT_BUILD]?: HookFn;
-  [Hooks.BEFORE_CONTRACT_DEPLOY]?: HookFn;
-  [Hooks.AFTER_DEPLOYMENT]?: HookFn;
-  [Hooks.AFTER_CONTRACT_BUILD]?: HookFn;
-  [Hooks.AFTER_CONTRACT_DEPLOY]?: HookFn;
-}
 
 const _handlers: IHandlersMap = {
   [Hooks.BEFORE_DEPLOYMENT]: [],
@@ -80,7 +51,7 @@ function _addHandlersToHook(pluginHookName: HookKeys, hook: HookFn) {
 
 export async function on(
   hookName: HookKeys,
-  hre: Partial<HardhatRuntimeEnvironment>,
+  hre: HardhatRuntimeEnvironment,
   state?: IState<IGlobalState>,
   contractState?: IState<IDeployingContractState>,
 ) {

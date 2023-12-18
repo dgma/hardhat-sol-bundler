@@ -1,22 +1,29 @@
-const ContextPlugin = require("./Context");
-const PluginsManager = require("../PluginsManager");
-const stateFabric = require("../stateFabric");
+import type * as ethers from "ethers";
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import * as PluginsManager from "../PluginsManager";
+import * as stateFabric from "../stateFabric";
+import {
+  type DeploymentContext,
+  type IDeploymentConfig,
+} from "../declarations/deployment";
+import { IDeployingContractState, IGlobalState } from "../declarations/state";
+import { default as ContextPlugin } from "./Context";
 
 const mockGetDeployment = jest.fn(() => ({}));
 const mockGetLock = jest.fn();
 
 jest.mock("../utils", () => ({
   ...jest.requireActual("../utils"),
-  getDeployment: (hre) => mockGetDeployment(hre),
-  getLock: (lockfile) => mockGetLock(lockfile),
+  getDeployment: () => mockGetDeployment(),
+  getLock: (lockfile: string) => mockGetLock(lockfile),
 }));
 
-xdescribe("ContextPlugin", () => {
+describe("ContextPlugin", () => {
   const hre = {
     network: {
       name: "unit",
     },
-  };
+  } as HardhatRuntimeEnvironment;
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -39,14 +46,22 @@ xdescribe("ContextPlugin", () => {
     });
 
     it("should create proper context", async () => {
-      const state = stateFabric.create({});
-      await ContextPlugin[PluginsManager.Hooks.BEFORE_DEPLOYMENT](
-        {
-          ...hre,
-          ethers: {
-            getContractAt: () => ({ interface: "interface" }),
-          },
+      const state = stateFabric.create({
+        ctx: {} as DeploymentContext,
+        deployedContracts: [""],
+      });
+
+      const extendedMockHre: unknown = {
+        ...hre,
+        ethers: {
+          getContractAt: async () => ({
+            interface: {} as ethers.Interface,
+          }),
         },
+      };
+
+      await ContextPlugin[PluginsManager.Hooks.BEFORE_DEPLOYMENT](
+        extendedMockHre as HardhatRuntimeEnvironment,
         state,
       );
       expect(state.value().ctx).toEqual({
@@ -60,21 +75,22 @@ xdescribe("ContextPlugin", () => {
 
   describe(`on ${PluginsManager.Hooks.BEFORE_CONTRACT_BUILD}`, () => {
     beforeEach(() => {
-      mockGetDeployment.mockImplementation(() => ({
-        config: {
-          Lib: {},
-          Contract1: {
-            args: "hello",
-          },
-          Contract2: {
-            args: ["world", (_, ctx) => ctx.Contract1.address],
-            options: {
-              libs: {
-                Lib: (_, ctx) => ctx.Lib.address,
-              },
+      const config: IDeploymentConfig["config"] = {
+        Lib: {},
+        Contract1: {
+          args: ["hello"],
+        },
+        Contract2: {
+          args: ["world", (_, ctx) => ctx.Contract1.address],
+          options: {
+            libs: {
+              Lib: (_, ctx) => ctx.Lib.address as string,
             },
           },
         },
+      };
+      mockGetDeployment.mockImplementation(() => ({
+        config,
       }));
     });
     it("should resolve dependencies", async () => {
@@ -82,21 +98,22 @@ xdescribe("ContextPlugin", () => {
         ctx: {
           Lib: {
             address: "0xlib_address",
-            interface: "lib_interface",
+            interface: {} as ethers.Interface,
             factoryByteCode: "lib_bytecode",
-            args: [],
+            args: [""],
           },
           Contract1: {
             address: "0xcontract1_address",
-            interface: "contract1_interface",
+            interface: {} as ethers.Interface,
             factoryByteCode: "contract1_bytecode",
             args: ["hello"],
           },
-        },
+        } as DeploymentContext,
+        deployedContracts: [""],
       });
       const contractState = stateFabric.create({
         name: "Contract2",
-      });
+      } as IDeployingContractState);
       await ContextPlugin[PluginsManager.Hooks.BEFORE_CONTRACT_BUILD](
         hre,
         state,
@@ -116,10 +133,10 @@ xdescribe("ContextPlugin", () => {
 
   describe(`on ${PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY}`, () => {
     it("should update context", async () => {
-      const state = stateFabric.create({});
+      const state = stateFabric.create({} as IGlobalState);
       const expectedContractState = {
         address: "0xaddress",
-        interface: "interface",
+        interface: {} as ethers.Interface,
         factoryByteCode: "bytecode",
         args: [1, 2, 3],
       };
@@ -133,7 +150,7 @@ xdescribe("ContextPlugin", () => {
         },
         constructorArguments: expectedContractState.args,
         name: "ContractName",
-      });
+      } as IDeployingContractState);
       await ContextPlugin[PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY](
         hre,
         state,

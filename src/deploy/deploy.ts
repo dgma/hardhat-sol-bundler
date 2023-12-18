@@ -1,19 +1,16 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import {
-  type IGlobalState,
-  type IDeployingContractState,
-} from "../types/state";
-import * as PluginsManager from "./PluginsManager";
-import * as stateFabric from "./stateFabric";
+import { Hooks, PluginsManager } from "../plugins";
+import * as stateFabric from "../state";
+import { type IGlobalState, type IDeployingContractState } from "./types";
 import { getDeployment, type ILimitedHardhatRuntimeEnvironment } from "./utils";
 
-export async function deploy(hre: Partial<HardhatRuntimeEnvironment>) {
+export async function deploy(hre: HardhatRuntimeEnvironment) {
   const state = stateFabric.create<IGlobalState>({
     ctx: {},
     deployedContracts: [],
   });
 
-  await PluginsManager.on(PluginsManager.Hooks.BEFORE_DEPLOYMENT, hre, state);
+  await PluginsManager.on(Hooks.BEFORE_DEPLOYMENT, hre, state);
 
   for (const contractToDeploy of Object.keys(
     getDeployment(hre as ILimitedHardhatRuntimeEnvironment).config,
@@ -25,7 +22,7 @@ export async function deploy(hre: Partial<HardhatRuntimeEnvironment>) {
     });
 
     await PluginsManager.on(
-      PluginsManager.Hooks.BEFORE_CONTRACT_BUILD,
+      Hooks.BEFORE_CONTRACT_BUILD,
       hre,
       state,
       contractState,
@@ -42,7 +39,7 @@ export async function deploy(hre: Partial<HardhatRuntimeEnvironment>) {
     }));
 
     await PluginsManager.on(
-      PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
+      Hooks.AFTER_CONTRACT_BUILD,
       hre,
       state,
       contractState,
@@ -59,7 +56,7 @@ export async function deploy(hre: Partial<HardhatRuntimeEnvironment>) {
     if (isSameByteCode && isSameArguments) return;
 
     await PluginsManager.on(
-      PluginsManager.Hooks.BEFORE_CONTRACT_DEPLOY,
+      Hooks.BEFORE_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
@@ -77,7 +74,7 @@ export async function deploy(hre: Partial<HardhatRuntimeEnvironment>) {
     }));
 
     await PluginsManager.on(
-      PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY,
+      Hooks.AFTER_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
@@ -91,7 +88,7 @@ export async function deploy(hre: Partial<HardhatRuntimeEnvironment>) {
     }));
   }
 
-  await PluginsManager.on(PluginsManager.Hooks.AFTER_DEPLOYMENT, hre, state);
+  await PluginsManager.on(Hooks.AFTER_DEPLOYMENT, hre, state);
 
   return state.value();
 }

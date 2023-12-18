@@ -1,5 +1,5 @@
 import { type HardhatUserConfig } from "hardhat/config";
-import { type DynamicLibrary } from "./types/deployment";
+import { type DynamicLibrary } from "./src/declarations/deployment";
 import "@nomicfoundation/hardhat-ethers";
 
 const getAddr: (contractName: string) => DynamicLibrary =
