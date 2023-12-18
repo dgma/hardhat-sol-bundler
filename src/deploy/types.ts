@@ -8,6 +8,7 @@ export type ConstructorArgument = number | string | object;
 export interface ILockContract {
   address?: string;
   interface?: ethers.Interface;
+  abi?: ethers.Interface["fragments"];
   factoryByteCode?: string;
   args?: ConstructorArgument[];
 }

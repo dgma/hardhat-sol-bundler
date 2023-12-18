@@ -55,7 +55,9 @@ describe("ContextPlugin", () => {
         ...hre,
         ethers: {
           getContractAt: async () => ({
-            interface: {} as ethers.Interface,
+            interface: {
+              fragments: [] as ethers.Interface["fragments"],
+            } as ethers.Interface,
           }),
         },
       };
@@ -67,7 +69,9 @@ describe("ContextPlugin", () => {
       expect(state.value().ctx).toEqual({
         Contract: {
           address: "0xaddress",
-          interface: {},
+          interface: {
+            fragments: [],
+          },
         },
       });
     });
@@ -136,14 +140,16 @@ describe("ContextPlugin", () => {
       const state = stateFabric.create({} as IGlobalState);
       const expectedContractState = {
         address: "0xaddress",
-        interface: {} as ethers.Interface,
+        abi: [] as ethers.Interface["fragments"],
         factoryByteCode: "bytecode",
         args: [1, 2, 3],
       };
       const contractState = stateFabric.create({
         contract: {
           getAddress: async () => expectedContractState.address,
-          interface: expectedContractState.interface,
+          interface: {
+            fragments: expectedContractState.abi,
+          },
         },
         factory: {
           bytecode: expectedContractState.factoryByteCode,
