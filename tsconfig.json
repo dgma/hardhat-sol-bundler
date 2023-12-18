@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2021",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "declaration": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["dist", "node_modules"],
+  "include": ["./src", "./integration"],
+  "files": ["./hardhat.config.ts"]
+}

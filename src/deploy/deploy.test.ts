@@ -1,20 +1,34 @@
-const { deploy } = require("./deploy");
-const PluginsManager = require("./PluginsManager");
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { Hooks, type HookKeys } from "../plugins";
+import { type IState } from "../state";
+import { default as deploy } from "./deploy";
+import {
+  type IGlobalState,
+  type IDeployingContractState,
+  type ConstructorArgument,
+} from "./types";
 
 const mockGetDeployment = jest.fn();
 const mockOn = jest.fn();
 const mockCreate = jest.fn();
 
-jest.mock("./stateFabric", () => ({
+jest.mock("../state", () => ({
   create: () => mockCreate(),
 }));
 
 jest.mock("./utils", () => ({
-  getDeployment: (hre) => mockGetDeployment(hre),
+  getDeployment: () => mockGetDeployment(),
 }));
-jest.mock("./PluginsManager", () => ({
-  ...jest.requireActual("./PluginsManager"),
-  on: async (...args) => mockOn(...args),
+jest.mock("../plugins", () => ({
+  ...jest.requireActual("../plugins"),
+  PluginsManager: {
+    on: async (
+      hookName: HookKeys,
+      hre: Partial<HardhatRuntimeEnvironment>,
+      state?: IState<IGlobalState>,
+      contractState?: IState<IDeployingContractState>,
+    ) => mockOn(hookName, hre, state, contractState),
+  },
 }));
 
 describe("deploy", () => {
@@ -39,10 +53,10 @@ describe("deploy", () => {
     ethers: {
       getContractFactory: mockGetContractFactory,
     },
-  };
+  } as any;
   const name = "ContractName";
   const factoryOptions = {};
-  const constructorArguments = [];
+  const constructorArguments: ConstructorArgument[] = [];
 
   const state = {
     value: () => ({
@@ -79,7 +93,7 @@ describe("deploy", () => {
 
     await deploy(hre);
 
-    expect(mockGetContractFactory).not.toBeCalled();
+    expect(mockGetContractFactory).not.toHaveBeenCalled();
   });
 
   it("should call factory for contract deployment initiation", async () => {
@@ -88,7 +102,7 @@ describe("deploy", () => {
       .mockImplementationOnce(() => state)
       .mockImplementationOnce(() => contractState);
     await deploy(hre);
-    expect(mockGetContractFactory).toBeCalledWith(name, factoryOptions);
+    expect(mockGetContractFactory).toHaveBeenCalledWith(name, factoryOptions);
   });
 
   it("should call plugin lifecycle hooks during deployment", async () => {
@@ -100,43 +114,45 @@ describe("deploy", () => {
 
     expect(mockOn).toHaveBeenNthCalledWith(
       1,
-      PluginsManager.Hooks.BEFORE_DEPLOYMENT,
+      Hooks.BEFORE_DEPLOYMENT,
       hre,
       state,
+      undefined,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       2,
-      PluginsManager.Hooks.BEFORE_CONTRACT_BUILD,
+      Hooks.BEFORE_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       3,
-      PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
+      Hooks.AFTER_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       4,
-      PluginsManager.Hooks.BEFORE_CONTRACT_DEPLOY,
+      Hooks.BEFORE_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       5,
-      PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY,
+      Hooks.AFTER_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
       6,
-      PluginsManager.Hooks.AFTER_DEPLOYMENT,
+      Hooks.AFTER_DEPLOYMENT,
       hre,
       state,
+      undefined,
     );
   });
 
@@ -160,8 +176,8 @@ describe("deploy", () => {
       .mockImplementationOnce(() => contractState);
 
     await deploy(hre);
-    expect(mockGetContractFactory).toBeCalled();
-    expect(mockContractDeploy).not.toBeCalled();
+    expect(mockGetContractFactory).toHaveBeenCalled();
+    expect(mockContractDeploy).not.toHaveBeenCalled();
   });
 
   it("should not deploy already deployed contract if constructor arguments has changed", async () => {
@@ -184,7 +200,7 @@ describe("deploy", () => {
       .mockImplementationOnce(() => contractState);
 
     await deploy(hre);
-    expect(mockGetContractFactory).toBeCalled();
-    expect(mockContractDeploy).toBeCalledWith(...constructorArguments);
+    expect(mockGetContractFactory).toHaveBeenCalled();
+    expect(mockContractDeploy).toHaveBeenCalledWith(...constructorArguments);
   });
 });

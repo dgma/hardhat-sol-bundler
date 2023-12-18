@@ -1,9 +1,11 @@
-const create = (initState) => {
+import { type Create, type Change } from "./types";
+
+export const create: Create = <T>(initState: T) => {
   let _state = initState;
 
   const value = () => _state;
 
-  const update = (change) => {
+  const update = (change: Change<T>) => {
     if (typeof change === "function") {
       _state = change(_state);
     } else {
@@ -12,8 +14,4 @@ const create = (initState) => {
   };
 
   return { value, update };
-};
-
-module.exports = {
-  create,
 };

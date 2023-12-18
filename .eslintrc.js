@@ -1,27 +1,53 @@
 module.exports = {
   env: {
-    commonjs: true,
+    browser: false,
     es2021: true,
-    "jest/globals": true,
+    mocha: true,
+    node: true,
+    jest: true,
   },
-  globals: {
-    hre: "readonly",
-  },
-  plugins: ["jest"],
-  extends: ["standard", "prettier"],
-  overrides: [
-    {
-      env: {
-        node: true,
-      },
-      files: [".eslintrc.{js,cjs}"],
-      parserOptions: {
-        sourceType: "script",
-      },
-    },
+
+  root: true,
+
+  plugins: ["@typescript-eslint", "json", "promise", "import", "prettier"],
+
+  extends: [
+    "eslint:recommended",
+    "plugin:node/recommended",
+    "plugin:json/recommended",
+    "plugin:promise/recommended",
+    "plugin:import/recommended",
+    "plugin:import/typescript",
+    "prettier",
   ],
+
+  parser: "@typescript-eslint/parser",
+
   parserOptions: {
-    ecmaVersion: "latest",
+    ecmaVersion: 12,
   },
-  rules: {},
+
+  rules: {
+    "node/no-missing-import": "off",
+    "node/no-unpublished-import": "off",
+    "prettier/prettier": "warn",
+    "import/order": [
+      "warn",
+      {
+        alphabetize: {
+          order: "asc",
+          caseInsensitive: true,
+        },
+      },
+    ],
+    "sort-vars": ["warn", { ignoreCase: true }],
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      { ignores: ["modules"] },
+    ],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+  },
+
+  ignorePatterns: ["dist", "**/*.d.ts"],
 };

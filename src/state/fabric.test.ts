@@ -1,12 +1,12 @@
-const stateFabric = require("./stateFabric");
+import * as fabric from "./fabric";
 
 describe("stateFabric", () => {
   it("should create state", () => {
-    const state = stateFabric.create({ x: "y" });
+    const state = fabric.create({ x: "y" });
     expect(state.value()).toEqual({ x: "y" });
   });
   it("should update deployment state", () => {
-    const state = stateFabric.create({ x: "y" });
+    const state = fabric.create({ x: "y" });
     state.update(() => ({
       x: "z",
     }));

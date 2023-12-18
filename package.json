@@ -1,23 +1,30 @@
 {
   "name": "@dgma/sol-bundler",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Declarative deployment tool for smart contracts",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "src",
-    "index.js"
+    "dist"
+  ],
+  "keywords": [
+    "ethereum",
+    "smart-contracts",
+    "deployment",
+    "test",
+    "testing",
+    "tool",
+    "hardhat",
+    "sol-bundler"
   ],
   "scripts": {
     "test:unit": "jest",
     "test:integration": "hardhat test",
     "compile": "hardhat compile",
-    "lint": "eslint src/**/*.js integration/**/*.js",
-    "prepare": "husky install"
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "integration"
-    ]
+    "lint": "eslint src/**/*.ts integration/**/*.ts",
+    "prepare": "husky install",
+    "build:pkg": "tsc --project tsconfig.pkg.json",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -32,23 +39,35 @@
   "publishConfig": {
     "@dogma:registry": "https://npm.pkg.github.com"
   },
-  "peerDependencies": {
-    "@nomicfoundation/hardhat-ethers": "^3.0.5",
-    "ethers": "^6.9.0",
-    "hardhat": "^2.19.2"
+  "engines": {
+    "node": ">=18.0.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
-    "eslint": "^8.55.0",
-    "eslint-config-prettier": "^9.1.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
+    "@types/chai": "^4.3.11",
+    "@types/jest": "^29.5.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.10.4",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "chai": "^4.3.10",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jest": "^27.6.0",
-    "eslint-plugin-n": "^16.4.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-promise": "^6.1.1",
+    "ethers": "^6.9.0",
+    "hardhat": "^2.19.2",
     "husky": "^8.0.3",
     "jest": "^29.7.0",
     "lint-staged": "^15.2.0",
-    "prettier": "^3.1.1"
+    "prettier": "^3.1.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }

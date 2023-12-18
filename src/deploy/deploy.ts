@@ -1,30 +1,34 @@
-const PluginsManager = require("./PluginsManager");
-const { getDeployment } = require("./utils");
-const stateFabric = require("./stateFabric");
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { Hooks, PluginsManager } from "../plugins";
+import * as stateFabric from "../state";
+import { type IGlobalState, type IDeployingContractState } from "./types";
+import { getDeployment, type ILimitedHardhatRuntimeEnvironment } from "./utils";
 
-async function deploy(hre) {
-  const state = stateFabric.create({
+export default async function deploy(hre: HardhatRuntimeEnvironment) {
+  const state = stateFabric.create<IGlobalState>({
     ctx: {},
     deployedContracts: [],
   });
 
-  await PluginsManager.on(PluginsManager.Hooks.BEFORE_DEPLOYMENT, hre, state);
+  await PluginsManager.on(Hooks.BEFORE_DEPLOYMENT, hre, state);
 
-  for (const contractToDeploy of Object.keys(getDeployment(hre).config)) {
-    const contractState = stateFabric.create({
+  for (const contractToDeploy of Object.keys(
+    getDeployment(hre as ILimitedHardhatRuntimeEnvironment).config,
+  )) {
+    const contractState = stateFabric.create<IDeployingContractState>({
       name: contractToDeploy,
       factoryOptions: {},
       constructorArguments: [],
     });
 
     await PluginsManager.on(
-      PluginsManager.Hooks.BEFORE_CONTRACT_BUILD,
+      Hooks.BEFORE_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
 
-    const factory = await hre.ethers.getContractFactory(
+    const factory = await hre?.ethers?.getContractFactory(
       contractState.value().name,
       contractState.value().factoryOptions,
     );
@@ -35,14 +39,14 @@ async function deploy(hre) {
     }));
 
     await PluginsManager.on(
-      PluginsManager.Hooks.AFTER_CONTRACT_BUILD,
+      Hooks.AFTER_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
 
     const isSameByteCode =
-      contractState.value().factory.bytecode ===
+      contractState.value()?.factory?.bytecode ===
       state.value().ctx[contractToDeploy]?.factoryByteCode;
 
     const isSameArguments =
@@ -52,7 +56,7 @@ async function deploy(hre) {
     if (isSameByteCode && isSameArguments) return;
 
     await PluginsManager.on(
-      PluginsManager.Hooks.BEFORE_CONTRACT_DEPLOY,
+      Hooks.BEFORE_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
@@ -60,9 +64,9 @@ async function deploy(hre) {
 
     const contract = await contractState
       .value()
-      .factory.deploy(...contractState.value().constructorArguments);
+      ?.factory?.deploy(...contractState.value().constructorArguments);
 
-    await contract.waitForDeployment();
+    await contract?.waitForDeployment();
 
     contractState.update((prevState) => ({
       ...prevState,
@@ -70,7 +74,7 @@ async function deploy(hre) {
     }));
 
     await PluginsManager.on(
-      PluginsManager.Hooks.AFTER_CONTRACT_DEPLOY,
+      Hooks.AFTER_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
@@ -84,11 +88,7 @@ async function deploy(hre) {
     }));
   }
 
-  await PluginsManager.on(PluginsManager.Hooks.AFTER_DEPLOYMENT, hre, state);
+  await PluginsManager.on(Hooks.AFTER_DEPLOYMENT, hre, state);
 
   return state.value();
 }
-
-module.exports = {
-  deploy,
-};
