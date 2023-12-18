@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import "hardhat/types/runtime";
 import "hardhat/types/config";
 import { type IDeploymentConfig } from "../deploy";
-// import {EthereumProvider} from 'hardhat/types';
 
 declare module "hardhat/types/config" {
   interface HardhatNetworkUserConfig {

@@ -1,9 +1,9 @@
 {
-  "src/**/*.js": [
+  "src/**/*.ts": [
     "eslint --fix",
     "prettier --write"
   ],
-  "integration/**/*.js": [
+  "integration/**/*.ts": [
     "eslint --fix",
     "prettier --write"
   ]

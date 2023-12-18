@@ -8,4 +8,4 @@ export default async function solBundler(hre: HardhatRuntimeEnvironment) {
   PluginsManager.registerPlugins(internalPlugins.concat(plugins));
 
   return deploy(hre);
-};
+}

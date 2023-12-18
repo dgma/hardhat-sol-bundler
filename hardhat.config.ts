@@ -1,10 +1,6 @@
 import { type HardhatUserConfig } from "hardhat/config";
-import { type DynamicLibrary } from "./src/deploy";
 import "@nomicfoundation/hardhat-ethers";
-
-const getAddr: (contractName: string) => DynamicLibrary =
-  (contractName) => (_, ctx) =>
-    ctx[contractName].address as string;
+import { dynamicAddress } from "./src";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
@@ -21,7 +17,7 @@ const config: HardhatUserConfig = {
             args: ["hello"],
             options: {
               libs: {
-                TestLibrary: getAddr("TestLibrary"),
+                TestLibrary: dynamicAddress("TestLibrary"),
               },
             },
           },

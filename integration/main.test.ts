@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import hre from "hardhat";
-import { type IGlobalState } from "../src/deploy";
-import { solBundler } from "../src/main";
+import { type IGlobalState, solBundler } from "../src";
 
 describe("main", () => {
   it("should deploy contracts based on config file", async () => {

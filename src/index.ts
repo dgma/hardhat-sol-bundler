@@ -1,3 +1,5 @@
+import "@nomicfoundation/hardhat-ethers";
+
 export * from "./shortcuts";
 export { default as solBundler } from "./main";
 
