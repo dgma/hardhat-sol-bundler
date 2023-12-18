@@ -50,7 +50,7 @@ interface CreateDeploymentContextParams {
 
 async function createDeploymentContext({
   hre,
-  lock,
+  lock = {},
   config,
 }: CreateDeploymentContextParams) {
   const ctx: DeploymentContext = {};
@@ -93,7 +93,7 @@ const afterContractDeploy: HookFn = async (_, state, contractState) => {
   if (cst) {
     const ctxUpdate: Partial<ILockContract> = {
       address: await cst?.contract?.getAddress(),
-      interface: cst?.contract?.interface,
+      abi: cst?.contract?.interface?.fragments,
       factoryByteCode: cst?.factory?.bytecode,
       args: cst.constructorArguments,
     };
