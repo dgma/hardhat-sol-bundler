@@ -1,15 +1,20 @@
-# sol-bundler
+# hardhat-sol-bundler
+
 Build, update and redeploy smart contracts with hardhat with one config.
 `sol-bundler` tracks contract changes and redeploys only those where any changes were made.
 
 ## Installation
-run `npm install --save-dev @dgma/sol-bundler`
+
+run `npm install --save-dev @dgma/hardhat-sol-bundler`
+
 ## Usage
-1. Create deployment config in hardhat
+
+1. Create deployment config in hardhat:
+
 ```ts
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-ethers";
-import { dynamicAddress } from "./src";
+import { dynamicAddress } from "@dgma/hardhat-sol-bundler";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
@@ -39,10 +44,9 @@ const config: HardhatUserConfig = {
 
 export default config;
 ```
-2. Write deployment script or task
-```ts
-import hre from "hardhat";
-const { solBundler } = require('@dgma/sol-bundler');
 
-const deploy = () => solBundler(hre)
+2. Run task:
+
+```sh
+npx hardhat deploy-bundle
 ```

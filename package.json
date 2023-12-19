@@ -28,18 +28,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dgma/sol-bundler.git"
+    "url": "git+https://github.com/dgma/hardhat-sol-bundler.git"
   },
-  "homepage": "https://github.com/dgma/sol-bundler#readme",
+  "homepage": "https://github.com/dgma/hardhat-sol-bundler#readme",
   "author": {
     "name": "Dogma Foundation"
   },
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/dgma/sol-bundler/issues"
+    "url": "https://github.com/dgma/hardhat-sol-bundler/issues"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.12.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.2",
@@ -67,8 +67,8 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "ethers": "^6.9.0",
-    "hardhat": "^2.19.2",
-    "@nomicfoundation/hardhat-ethers": "^3.0.5"
+    "hardhat": "^2.19.2"
   }
 }

@@ -1,4 +1,5 @@
 import "@nomicfoundation/hardhat-ethers";
+import "./deploy-bundle.task";
 
 export * from "./shortcuts";
 export { default as solBundler } from "./main";
