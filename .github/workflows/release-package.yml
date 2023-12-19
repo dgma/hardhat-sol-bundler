@@ -5,18 +5,17 @@ on:
 jobs:
   publish-pkg:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: "18.12.x"
           registry-url: "https://registry.npmjs.org"
+          scope: '@dgma'
+          always-auth: 'true'
       - run: npm ci
       - run: npm run test:integration
       - run: npm run build:pkg
-      - run: npm publish --access public
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_DEPLOY_TOKEN }}
