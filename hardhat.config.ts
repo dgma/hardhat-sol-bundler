@@ -11,7 +11,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       deployment: {
-        // lockFile: "random.json",
+        lockFile: "random.json",
         config: {
           TestLibrary: {},
           TestContract: {
