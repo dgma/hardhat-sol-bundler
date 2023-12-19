@@ -16,6 +16,8 @@ jobs:
         with:
           node-version: "18.12.x"
           registry-url: "https://registry.npmjs.org"
+          scope: '@dgma'
+          always-auth: 'true'
       - run: npm ci
       - run: npm run test:integration
       - run: npm run build:pkg
