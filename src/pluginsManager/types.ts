@@ -11,19 +11,25 @@ export type HookFn = (
 ) => Promise<void>;
 
 export interface IHandlersMap {
+  [Hooks.BEFORE_CONTEXT_INITIALIZATION]: HookFn[];
   [Hooks.BEFORE_DEPLOYMENT]: HookFn[];
+  [Hooks.BEFORE_DEPENDENCY_RESOLUTION]: HookFn[];
   [Hooks.BEFORE_CONTRACT_BUILD]: HookFn[];
   [Hooks.BEFORE_CONTRACT_DEPLOY]: HookFn[];
   [Hooks.AFTER_DEPLOYMENT]: HookFn[];
   [Hooks.AFTER_CONTRACT_BUILD]: HookFn[];
+  [Hooks.AFTER_CONTEXT_SERIALIZATION]: HookFn[];
   [Hooks.AFTER_CONTRACT_DEPLOY]: HookFn[];
 }
 
 export interface IPlugin {
+  [Hooks.BEFORE_CONTEXT_INITIALIZATION]?: HookFn;
   [Hooks.BEFORE_DEPLOYMENT]?: HookFn;
+  [Hooks.BEFORE_DEPENDENCY_RESOLUTION]?: HookFn;
   [Hooks.BEFORE_CONTRACT_BUILD]?: HookFn;
   [Hooks.BEFORE_CONTRACT_DEPLOY]?: HookFn;
   [Hooks.AFTER_DEPLOYMENT]?: HookFn;
   [Hooks.AFTER_CONTRACT_BUILD]?: HookFn;
+  [Hooks.AFTER_CONTEXT_SERIALIZATION]?: HookFn;
   [Hooks.AFTER_CONTRACT_DEPLOY]?: HookFn;
 }

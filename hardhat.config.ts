@@ -1,5 +1,7 @@
 import { type HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
+import VerifyPlugin from "./plugins/Verify";
 import { dynamicAddress } from "./src";
 
 const config: HardhatUserConfig = {
@@ -12,6 +14,8 @@ const config: HardhatUserConfig = {
     hardhat: {
       deployment: {
         // lockFile: "random.json",
+        // verify: true,
+        plugins: [VerifyPlugin],
         config: {
           TestLibrary: {},
           TestContract: {

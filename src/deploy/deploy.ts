@@ -1,8 +1,9 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { Hooks, PluginsManager } from "../plugins";
+import { Hooks, PluginsManager } from "../pluginsManager";
 import * as stateFabric from "../state";
+import * as Context from "./context";
 import { type IGlobalState, type IDeployingContractState } from "./types";
-import { getDeployment, type ILimitedHardhatRuntimeEnvironment } from "./utils";
+import { getDeployment, saveDeployment } from "./utils";
 
 export default async function deploy(hre: HardhatRuntimeEnvironment) {
   const state = stateFabric.create<IGlobalState>({
@@ -10,16 +11,27 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
     deployedContracts: [],
   });
 
+  await PluginsManager.on(Hooks.BEFORE_CONTEXT_INITIALIZATION, hre, state);
+
+  await Context.init(hre, state);
+
   await PluginsManager.on(Hooks.BEFORE_DEPLOYMENT, hre, state);
 
-  for (const contractToDeploy of Object.keys(
-    getDeployment(hre as ILimitedHardhatRuntimeEnvironment).config,
-  )) {
+  for (const contractToDeploy of Object.keys(getDeployment(hre).config)) {
     const contractState = stateFabric.create<IDeployingContractState>({
       name: contractToDeploy,
       factoryOptions: {},
       constructorArguments: [],
     });
+
+    await PluginsManager.on(
+      Hooks.BEFORE_DEPENDENCY_RESOLUTION,
+      hre,
+      state,
+      contractState,
+    );
+
+    await Context.resolveDeps(hre, state, contractState);
 
     await PluginsManager.on(
       Hooks.BEFORE_CONTRACT_BUILD,
@@ -80,6 +92,15 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
       contractState,
     );
 
+    await Context.serialize(hre, state, contractState);
+
+    await PluginsManager.on(
+      Hooks.AFTER_CONTEXT_SERIALIZATION,
+      hre,
+      state,
+      contractState,
+    );
+
     state.update((prevState) => ({
       ...prevState,
       deployedContracts: state
@@ -89,6 +110,8 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
   }
 
   await PluginsManager.on(Hooks.AFTER_DEPLOYMENT, hre, state);
+
+  await saveDeployment(hre, state);
 
   return state.value();
 }

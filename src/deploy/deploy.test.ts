@@ -1,5 +1,5 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { Hooks, type HookKeys } from "../plugins";
+import { Hooks, type HookKeys } from "../pluginsManager";
 import { type IState } from "../state";
 import { default as deploy } from "./deploy";
 import {
@@ -11,16 +11,27 @@ import {
 const mockGetDeployment = jest.fn();
 const mockOn = jest.fn();
 const mockCreate = jest.fn();
+const mockSaveDeployment = jest.fn();
+const mockInit = jest.fn();
+const mockResolveDeps = jest.fn();
+const mockSerialize = jest.fn();
 
 jest.mock("../state", () => ({
   create: () => mockCreate(),
 }));
 
+jest.mock("./context", () => ({
+  init: () => mockInit(),
+  resolveDeps: () => mockResolveDeps(),
+  serialize: () => mockSerialize(),
+}));
+
 jest.mock("./utils", () => ({
   getDeployment: () => mockGetDeployment(),
+  saveDeployment: () => mockSaveDeployment(),
 }));
-jest.mock("../plugins", () => ({
-  ...jest.requireActual("../plugins"),
+jest.mock("../pluginsManager", () => ({
+  ...jest.requireActual("../pluginsManager"),
   PluginsManager: {
     on: async (
       hookName: HookKeys,
@@ -114,41 +125,67 @@ describe("deploy", () => {
 
     expect(mockOn).toHaveBeenNthCalledWith(
       1,
+      Hooks.BEFORE_CONTEXT_INITIALIZATION,
+      hre,
+      state,
+      undefined,
+    );
+
+    expect(mockOn).toHaveBeenNthCalledWith(
+      2,
       Hooks.BEFORE_DEPLOYMENT,
       hre,
       state,
       undefined,
     );
+
     expect(mockOn).toHaveBeenNthCalledWith(
-      2,
+      3,
+      Hooks.BEFORE_DEPENDENCY_RESOLUTION,
+      hre,
+      state,
+      contractState,
+    );
+
+    expect(mockOn).toHaveBeenNthCalledWith(
+      4,
       Hooks.BEFORE_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
-      3,
+      5,
       Hooks.AFTER_CONTRACT_BUILD,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
-      4,
+      6,
       Hooks.BEFORE_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
     );
     expect(mockOn).toHaveBeenNthCalledWith(
-      5,
+      7,
       Hooks.AFTER_CONTRACT_DEPLOY,
       hre,
       state,
       contractState,
     );
+
     expect(mockOn).toHaveBeenNthCalledWith(
-      6,
+      8,
+      Hooks.AFTER_CONTEXT_SERIALIZATION,
+      hre,
+      state,
+      contractState,
+    );
+
+    expect(mockOn).toHaveBeenNthCalledWith(
+      9,
       Hooks.AFTER_DEPLOYMENT,
       hre,
       state,

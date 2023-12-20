@@ -1,26 +1,24 @@
 import type * as ethers from "ethers";
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { Hooks } from "../../plugins";
-import * as stateFabric from "../../state";
+import * as stateFabric from "../state";
+import { init, serialize, resolveDeps } from "./context";
 import {
   type DeploymentContext,
   type IDeploymentConfig,
   type IDeployingContractState,
   type IGlobalState,
-} from "../types";
-// import { IDeployingContractState, IGlobalState } from "../declarations/state";
-import { default as ContextPlugin } from "./Context";
+} from "./types";
 
 const mockGetDeployment = jest.fn(() => ({}));
 const mockGetLock = jest.fn();
 
-jest.mock("../utils", () => ({
-  ...jest.requireActual("../utils"),
+jest.mock("./utils", () => ({
+  ...jest.requireActual("./utils"),
   getDeployment: () => mockGetDeployment(),
   getLock: (lockfile: string) => mockGetLock(lockfile),
 }));
 
-describe("ContextPlugin", () => {
+describe("context", () => {
   const hre = {
     network: {
       name: "unit",
@@ -29,7 +27,7 @@ describe("ContextPlugin", () => {
   afterEach(() => {
     jest.resetAllMocks();
   });
-  describe(`on ${Hooks.BEFORE_DEPLOYMENT}`, () => {
+  describe("init", () => {
     mockGetDeployment.mockImplementation(() => ({
       config: {
         Contract: {},
@@ -62,10 +60,7 @@ describe("ContextPlugin", () => {
         },
       };
 
-      await ContextPlugin[Hooks.BEFORE_DEPLOYMENT](
-        extendedMockHre as HardhatRuntimeEnvironment,
-        state,
-      );
+      await init(extendedMockHre as HardhatRuntimeEnvironment, state);
       expect(state.value().ctx).toEqual({
         Contract: {
           address: "0xaddress",
@@ -77,7 +72,7 @@ describe("ContextPlugin", () => {
     });
   });
 
-  describe(`on ${Hooks.BEFORE_CONTRACT_BUILD}`, () => {
+  describe("resolveDeps", () => {
     beforeEach(() => {
       const config: IDeploymentConfig["config"] = {
         Lib: {},
@@ -118,11 +113,7 @@ describe("ContextPlugin", () => {
       const contractState = stateFabric.create({
         name: "Contract2",
       } as IDeployingContractState);
-      await ContextPlugin[Hooks.BEFORE_CONTRACT_BUILD](
-        hre,
-        state,
-        contractState,
-      );
+      await resolveDeps(hre, state, contractState);
       expect(contractState.value()).toEqual({
         name: "Contract2",
         factoryOptions: {
@@ -135,7 +126,7 @@ describe("ContextPlugin", () => {
     });
   });
 
-  describe(`on ${Hooks.AFTER_CONTRACT_DEPLOY}`, () => {
+  describe("serialize", () => {
     it("should update context", async () => {
       const state = stateFabric.create({} as IGlobalState);
       const expectedContractState = {
@@ -157,11 +148,7 @@ describe("ContextPlugin", () => {
         constructorArguments: expectedContractState.args,
         name: "ContractName",
       } as IDeployingContractState);
-      await ContextPlugin[Hooks.AFTER_CONTRACT_DEPLOY](
-        hre,
-        state,
-        contractState,
-      );
+      await serialize(hre, state, contractState);
 
       expect(state.value().ctx).toEqual({
         ContractName: expectedContractState,

@@ -1,9 +1,7 @@
 import fs from "fs";
-import {
-  type HardhatNetworkUserConfig,
-  type HttpNetworkUserConfig,
-} from "hardhat/types/config";
-import { type IDeploymentConfig, type Lock } from "./types";
+import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { type IState } from "../state/types";
+import { type IDeploymentConfig, type Lock, type IGlobalState } from "./types";
 
 export const getLock: (lockfileName: string) => Lock = (lockfileName) => {
   if (fs.existsSync(lockfileName)) {
@@ -12,26 +10,32 @@ export const getLock: (lockfileName: string) => Lock = (lockfileName) => {
   return {};
 };
 
-export interface ILimitedHardhatRuntimeEnvironment {
-  network: {
-    name: string;
-  };
-  userConfig: {
-    networks?: {
-      [network: string]:
-        | HardhatNetworkUserConfig
-        | HttpNetworkUserConfig
-        | undefined;
-    };
-  };
-}
-
 export const getDeployment: (
-  hre: ILimitedHardhatRuntimeEnvironment,
+  hre: HardhatRuntimeEnvironment,
 ) => IDeploymentConfig = (hre) => {
   return (
     hre.userConfig.networks?.[hre.network.name]?.deployment ?? {
       config: {},
     }
   );
+};
+
+export const saveDeployment = async (
+  hre: HardhatRuntimeEnvironment,
+  state: IState<IGlobalState>,
+) => {
+  const { lockFile } = getDeployment(hre);
+
+  if (lockFile) {
+    const lock = getLock(lockFile);
+
+    const newLock = {
+      ...lock,
+      [hre?.network?.name as string]: {
+        ...state?.value().ctx,
+      },
+    };
+
+    fs.writeFileSync(lockFile, JSON.stringify(newLock));
+  }
 };
