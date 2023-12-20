@@ -1,6 +1,6 @@
 import { TASK_VERIFY_VERIFY } from "@nomicfoundation/hardhat-verify/internal/task-names";
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { type IDeployingContractState, type IGlobalState } from "../";
+import { type IGlobalState } from "../";
 import * as stateFabric from "../state";
 import { VerifyPlugin } from "./Verify";
 
@@ -32,12 +32,6 @@ describe("VerifyPlugin", () => {
     deployedContracts: ["Contract"],
   });
 
-  const contractState = stateFabric.create<IDeployingContractState>({
-    name: "Contract",
-    factoryOptions: {},
-    constructorArguments: expectedVerificationArgs.constructorArguments,
-  });
-
   const createHre = (globalVerify?: boolean, contractVerify?: boolean) =>
     ({
       network: {
@@ -66,11 +60,7 @@ describe("VerifyPlugin", () => {
 
   it("should verify if deployment.verify=true contract.verify=undefined", async () => {
     const hre = createHre(true);
-    await VerifyPlugin.AFTER_CONTEXT_SERIALIZATION(
-      hre,
-      globalState,
-      contractState,
-    );
+    await VerifyPlugin.AFTER_DEPLOYMENT(hre, globalState);
     expect(mockRun).toHaveBeenCalledWith(
       TASK_VERIFY_VERIFY,
       expectedVerificationArgs,
@@ -79,11 +69,7 @@ describe("VerifyPlugin", () => {
 
   it("should verify if deployment.verify=false contract.verify=true", async () => {
     const hre = createHre(false, true);
-    await VerifyPlugin.AFTER_CONTEXT_SERIALIZATION(
-      hre,
-      globalState,
-      contractState,
-    );
+    await VerifyPlugin.AFTER_DEPLOYMENT(hre, globalState);
     expect(mockRun).toHaveBeenCalledWith(
       TASK_VERIFY_VERIFY,
       expectedVerificationArgs,
@@ -92,11 +78,7 @@ describe("VerifyPlugin", () => {
 
   it("should not verify if deployment.verify=true contract.verify=false", async () => {
     const hre = createHre(true, false);
-    await VerifyPlugin.AFTER_CONTEXT_SERIALIZATION(
-      hre,
-      globalState,
-      contractState,
-    );
+    await VerifyPlugin.AFTER_DEPLOYMENT(hre, globalState);
     expect(mockRun).not.toHaveBeenCalled();
   });
 });
