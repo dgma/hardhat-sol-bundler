@@ -1,7 +1,7 @@
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
-import { dynamicAddress } from "./src";
+import { dynamicAddress, dynamicExternalAddress } from "./src";
 import ExternalsPlugin from "./src/plugins/Externals";
 import VerifyPlugin from "./src/plugins/Verify";
 
@@ -18,7 +18,7 @@ const config: HardhatUserConfig = {
         config: {
           TestLibrary: {},
           TestContract: {
-            args: ["hello"],
+            args: [dynamicExternalAddress("ExternalContract")],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),

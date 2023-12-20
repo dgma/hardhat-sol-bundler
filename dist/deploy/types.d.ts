@@ -15,9 +15,10 @@ export interface ILockContract {
     abi?: ethers.Interface["fragments"];
     factoryByteCode?: string;
     args?: ConstructorArgument[];
-    externals?: Externals;
 }
-export type DeploymentContext = Record<string, ILockContract>;
+export type DeploymentContext = Record<string, ILockContract> & {
+    externals?: Externals;
+};
 export type Lock = Record<string, DeploymentContext>;
 export type DynamicConstructorArgument = (hre: HardhatRuntimeEnvironment, ctx: DeploymentContext) => ConstructorArgument;
 export type DynamicLibrary = (HardhatRuntimeEnvironment: HardhatRuntimeEnvironment, ctx: DeploymentContext) => string;
