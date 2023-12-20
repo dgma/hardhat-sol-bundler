@@ -1,6 +1,7 @@
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
+import ExternalsPlugin from "./plugins/Externals";
 import VerifyPlugin from "./plugins/Verify";
 import { dynamicAddress } from "./src";
 
@@ -15,7 +16,7 @@ const config: HardhatUserConfig = {
       deployment: {
         // lockFile: "random.json",
         // verify: true,
-        plugins: [VerifyPlugin],
+        plugins: [VerifyPlugin, ExternalsPlugin],
         config: {
           TestLibrary: {},
           TestContract: {
@@ -25,6 +26,12 @@ const config: HardhatUserConfig = {
                 TestLibrary: dynamicAddress("TestLibrary"),
               },
             },
+          },
+        },
+        externals: {
+          ExternalContract: {
+            address: "0x0000000000000000000000000000000000000000",
+            abi: [],
           },
         },
       },
