@@ -5,21 +5,12 @@ import { type IPlugin } from "../pluginsManager";
 
 export type ConstructorArgument = number | string | object;
 
-export interface IExternal {
-  address: string;
-  interface?: ethers.Interface;
-  abi?: ethers.Interface["fragments"];
-}
-
-export type Externals = Record<string, IExternal>;
-
 export interface ILockContract {
   address?: string;
   interface?: ethers.Interface;
   abi?: ethers.Interface["fragments"];
   factoryByteCode?: string;
   args?: ConstructorArgument[];
-  externals?: Externals;
 }
 
 export type DeploymentContext = Record<string, ILockContract>;
@@ -51,7 +42,6 @@ export interface IDeploymentConfig {
       };
     };
   };
-  externals?: Externals;
 }
 
 export interface IGlobalState {

@@ -4,28 +4,33 @@ import {
   getDeployment,
   type HookFn,
   type ILockContract,
-  type IDeployingContractState,
+  type IGlobalState,
 } from "../";
 
-const afterContractSerialization: HookFn = async (
-  hre,
-  state,
-  contractState,
-) => {
+const verifyDeployedContracts: HookFn = async (hre, state) => {
   const { verify, config } = getDeployment(hre);
-  const cst = contractState?.value() as IDeployingContractState;
-  const contractCtx = state?.value().ctx[cst.name] as ILockContract;
-  if (
-    (verify && config[cst.name].verify !== false) ||
-    config[cst.name].verify === true
-  ) {
-    return hre.run(TASK_VERIFY_VERIFY, {
-      address: contractCtx.address,
-      constructorArguments: contractCtx.args,
-    });
-  }
+  const st = state?.value() as IGlobalState;
+  await Promise.all(
+    st.deployedContracts.map(async (deployedContractName) => {
+      const contractCtx = st.ctx[deployedContractName] as ILockContract;
+      if (
+        (verify && config[deployedContractName].verify !== false) ||
+        config[deployedContractName].verify === true
+      ) {
+        try {
+          await hre.run(TASK_VERIFY_VERIFY, {
+            address: contractCtx.address,
+            constructorArguments: contractCtx.args,
+          });
+        } catch (error) {
+          console.error("verification failed, safely continue");
+          console.error((error as any).message);
+        }
+      }
+    }),
+  );
 };
 
-export default {
-  [Hooks.AFTER_CONTEXT_SERIALIZATION]: afterContractSerialization,
+export const VerifyPlugin = {
+  [Hooks.AFTER_DEPLOYMENT]: verifyDeployedContracts,
 };
