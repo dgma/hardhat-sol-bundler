@@ -2,7 +2,7 @@ import { TASK_VERIFY_VERIFY } from "@nomicfoundation/hardhat-verify/internal/tas
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 import { type IDeployingContractState, type IGlobalState } from "../";
 import * as stateFabric from "../state";
-import VerifyPlugin from "./Verify";
+import { VerifyPlugin } from "./Verify";
 
 /**
  * Plugin import everything from ./src, so we need to mock hh task module

@@ -93,26 +93,6 @@ const deployment = {
 
 **note** verify plugin uses [@nomicfoundation/hardhat-verify](https://www.npmjs.com/package/@nomicfoundation/hardhat-verify). Please make sure you have configured using config according to official plugin guidance.
 
-- To inject externals into runtime
-
-```ts
-import ExternalsPlugin from "./plugins/Externals";
-
-const deployment = {
-  plugins: [ExternalsPlugin],
-  config: {
-    // contracts..
-  },
-  externals: {
-    ExternalContract: {
-      address: "0x0000000000000000000000000000000000000000",
-      // Optional. If passed, runtime context will have `interface: ethers.Interface` property
-      abi: []
-    }
-  }
-};
-```
-
 ## Contributing
 
 Contributions are always welcome! Open a PR or an issue!

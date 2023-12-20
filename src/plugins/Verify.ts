@@ -26,6 +26,6 @@ const afterContractSerialization: HookFn = async (
   }
 };
 
-export default {
+export const VerifyPlugin = {
   [Hooks.AFTER_CONTEXT_SERIALIZATION]: afterContractSerialization,
 };
