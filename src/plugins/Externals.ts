@@ -1,4 +1,4 @@
-import { Hooks, getDeployment, type HookFn, Externals } from "../src";
+import { Hooks, getDeployment, type HookFn, Externals } from "../";
 
 const beforeContractBuild: HookFn = async (hre, state) => {
   const { externals } = getDeployment(hre);

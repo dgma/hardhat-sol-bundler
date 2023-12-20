@@ -1,9 +1,9 @@
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
-import ExternalsPlugin from "./plugins/Externals";
-import VerifyPlugin from "./plugins/Verify";
 import { dynamicAddress } from "./src";
+import ExternalsPlugin from "./src/plugins/Externals";
+import VerifyPlugin from "./src/plugins/Verify";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
@@ -14,8 +14,6 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       deployment: {
-        // lockFile: "random.json",
-        // verify: true,
         plugins: [VerifyPlugin, ExternalsPlugin],
         config: {
           TestLibrary: {},

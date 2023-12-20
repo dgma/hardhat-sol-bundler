@@ -5,7 +5,7 @@ import {
   type HookFn,
   type ILockContract,
   type IDeployingContractState,
-} from "../src";
+} from "../";
 
 const afterContractSerialization: HookFn = async (
   hre,

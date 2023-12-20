@@ -1,6 +1,6 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { type IGlobalState, type Externals } from "../src";
-import * as stateFabric from "../src/state";
+import { type IGlobalState, type Externals } from "../";
+import * as stateFabric from "../state";
 import ExternalsPlugin from "./Externals";
 
 /**
