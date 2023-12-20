@@ -9,6 +9,6 @@
     "skipLibCheck": true
   },
   "exclude": ["dist", "node_modules"],
-  "include": ["./src", "./integration"],
+  "include": ["./src", "./integration", "./plugins"],
   "files": ["./hardhat.config.ts"]
 }

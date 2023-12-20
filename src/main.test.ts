@@ -1,6 +1,6 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 import { default as solBundler } from "./main";
-import { type IPlugin } from "./plugins";
+import { type IPlugin } from "./pluginsManager";
 
 const plugin: IPlugin = {};
 
@@ -19,7 +19,7 @@ jest.mock("./deploy", () => ({
   deploy: (hre: HardhatRuntimeEnvironment) => mockDeploy(hre),
   internalPlugins: [],
 }));
-jest.mock("./plugins", () => ({
+jest.mock("./pluginsManager", () => ({
   PluginsManager: {
     registerPlugins: (plugins: IPlugin[]) => mockRegisterPlugins(plugins),
   },

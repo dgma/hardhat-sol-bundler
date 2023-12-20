@@ -12,11 +12,14 @@ import {
 const _hooksList = Object.values(Hooks);
 
 const _handlers: IHandlersMap = {
+  [Hooks.BEFORE_CONTEXT_INITIALIZATION]: [],
   [Hooks.BEFORE_DEPLOYMENT]: [],
+  [Hooks.BEFORE_DEPENDENCY_RESOLUTION]: [],
   [Hooks.BEFORE_CONTRACT_BUILD]: [],
   [Hooks.BEFORE_CONTRACT_DEPLOY]: [],
   [Hooks.AFTER_DEPLOYMENT]: [],
   [Hooks.AFTER_CONTRACT_BUILD]: [],
+  [Hooks.AFTER_CONTEXT_SERIALIZATION]: [],
   [Hooks.AFTER_CONTRACT_DEPLOY]: [],
 };
 

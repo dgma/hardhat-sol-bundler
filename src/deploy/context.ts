@@ -1,5 +1,5 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { Hooks, type HookFn } from "../../plugins";
+import { type IState } from "../state/types";
 import {
   type DeploymentContext,
   type Lib,
@@ -7,12 +7,16 @@ import {
   type DynamicConstructorArgument,
   type ILockContract,
   type IDeploymentConfig,
-} from "../types";
-import {
-  getLock,
-  getDeployment,
-  type ILimitedHardhatRuntimeEnvironment,
-} from "../utils";
+  type IGlobalState,
+  type IDeployingContractState,
+} from "./types";
+import { getLock, getDeployment } from "./utils";
+
+export type ContextManipulator = (
+  hre: HardhatRuntimeEnvironment,
+  state?: IState<IGlobalState>,
+  contractState?: IState<IDeployingContractState>,
+) => Promise<void>;
 
 const getLibrariesDynamically = async (
   hre: HardhatRuntimeEnvironment,
@@ -73,10 +77,8 @@ async function createDeploymentContext({
   return ctx;
 }
 
-const beforeDeployment: HookFn = async (hre, state) => {
-  const { config, lockFile } = getDeployment(
-    hre as ILimitedHardhatRuntimeEnvironment,
-  );
+export const init: ContextManipulator = async (hre, state) => {
+  const { config, lockFile } = getDeployment(hre);
 
   const lock = lockFile ? getLock(lockFile)[hre.network.name] : {};
 
@@ -88,7 +90,11 @@ const beforeDeployment: HookFn = async (hre, state) => {
   state?.update((prevState) => ({ ...prevState, ctx }));
 };
 
-const afterContractDeploy: HookFn = async (_, state, contractState) => {
+export const serialize: ContextManipulator = async (
+  _,
+  state,
+  contractState,
+) => {
   const cst = contractState?.value();
   if (cst) {
     const ctxUpdate: Partial<ILockContract> = {
@@ -108,9 +114,13 @@ const afterContractDeploy: HookFn = async (_, state, contractState) => {
   }
 };
 
-const beforeContractBuild: HookFn = async (hre, state, contractState) => {
+export const resolveDeps: ContextManipulator = async (
+  hre,
+  state,
+  contractState,
+) => {
   const ctx = state?.value().ctx;
-  const { config } = getDeployment(hre as ILimitedHardhatRuntimeEnvironment);
+  const { config } = getDeployment(hre);
 
   const contractConfig = config[contractState?.value().name as string];
 
@@ -134,12 +144,4 @@ const beforeContractBuild: HookFn = async (hre, state, contractState) => {
       constructorArguments,
     }));
   }
-};
-
-export default {
-  [Hooks.BEFORE_DEPLOYMENT]: beforeDeployment,
-
-  [Hooks.AFTER_CONTRACT_DEPLOY]: afterContractDeploy,
-
-  [Hooks.BEFORE_CONTRACT_BUILD]: beforeContractBuild,
 };
