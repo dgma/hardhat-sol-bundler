@@ -1,8 +1,8 @@
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
+import { VerifyPlugin } from "./plugins/Verify";
 import { dynamicAddress } from "./src";
-import { VerifyPlugin } from "./src/plugins/Verify";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",

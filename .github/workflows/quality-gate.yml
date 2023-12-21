@@ -13,7 +13,7 @@ jobs:
           node-version: "18.12.x"
       - name: Install modules
         run: npm i
-      - name: Typeccheck
+      - name: Typecheck
         run: npm run typecheck;
       - name: Run linitng
         run: npm run lint

@@ -1,8 +1,6 @@
 import "hardhat/types/runtime";
 import "hardhat/types/config";
-import "@nomicfoundation/hardhat-verify";
-import "@nomicfoundation/hardhat-ethers";
-import { type IDeploymentConfig } from "../deploy";
+import { type IDeploymentConfig } from "./deploy";
 
 declare module "hardhat/types/config" {
   interface HardhatNetworkUserConfig {
@@ -13,7 +11,9 @@ declare module "hardhat/types/config" {
     gasMultiplier?: number;
     initialBaseFeePerGas?: number;
     hardfork?: string;
+    // eslint-disable-next-line no-undef
     mining?: HardhatNetworkMiningUserConfig;
+    // eslint-disable-next-line no-undef
     accounts?: HardhatNetworkAccountsUserConfig;
     blockGasLimit?: number;
     minGasPrice?: number | string;
@@ -23,8 +23,10 @@ declare module "hardhat/types/config" {
     allowBlocksWithSameTimestamp?: boolean;
     initialDate?: string;
     loggingEnabled?: boolean;
+    // eslint-disable-next-line no-undef
     forking?: HardhatNetworkForkingUserConfig;
     coinbase?: string;
+    // eslint-disable-next-line no-undef
     chains?: HardhatNetworkChainsUserConfig;
     enableTransientStorage?: boolean;
     deployment?: IDeploymentConfig;
@@ -39,6 +41,7 @@ declare module "hardhat/types/config" {
     url?: string;
     timeout?: number;
     httpHeaders?: { [name: string]: string };
+    // eslint-disable-next-line no-undef
     accounts?: HttpNetworkAccountsUserConfig;
     deployment?: IDeploymentConfig;
   }

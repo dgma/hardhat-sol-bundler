@@ -76,7 +76,7 @@ const deployment = {
 ```ts
 // no need @nomicfoundation/hardhat-verify if you use @nomicfoundation/hardhat-toolbox
 import "@nomicfoundation/hardhat-verify";
-import { VerifyPlugin } from "@dgma/hardhat-sol-bundler/dist/plugins/Verify";
+import { VerifyPlugin } from "@dgma/hardhat-sol-bundler/plugins/Verify";
 
 const deployment = {
   plugins: [VerifyPlugin],

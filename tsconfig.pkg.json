@@ -4,9 +4,10 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
-    "outDir": "dist",
+    "outDir": ".",
     "declaration": true,
     "skipLibCheck": true
   },
   "exclude": ["dist", "node_modules", "**/*.test.ts", "hardhat.config.ts"],
+  "include": ["./src", "./plugins"],
 }
