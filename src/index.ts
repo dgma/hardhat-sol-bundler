@@ -1,4 +1,5 @@
 import "./deploy-bundle.task";
+import "./hh-extension.types";
 
 export * from "./shortcuts";
 export { default as solBundler } from "./main";

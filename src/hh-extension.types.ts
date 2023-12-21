@@ -1,7 +1,5 @@
 import "hardhat/types/runtime";
 import "hardhat/types/config";
-import "@nomicfoundation/hardhat-verify";
-import "@nomicfoundation/hardhat-ethers";
 import { type IDeploymentConfig } from "./deploy";
 
 declare module "hardhat/types/config" {
