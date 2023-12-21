@@ -5,7 +5,7 @@ import {
   type HookFn,
   type ILockContract,
   type IGlobalState,
-} from "../";
+} from "../src";
 
 const verifyDeployedContracts: HookFn = async (hre, state) => {
   const { verify, config } = getDeployment(hre);

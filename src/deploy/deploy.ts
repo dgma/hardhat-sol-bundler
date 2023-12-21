@@ -65,7 +65,7 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
       JSON.stringify(contractState.value().constructorArguments) ===
       JSON.stringify(state.value().ctx[contractToDeploy]?.args);
 
-    if (isSameByteCode && isSameArguments) return;
+    if (isSameByteCode && isSameArguments) continue;
 
     await PluginsManager.on(
       Hooks.BEFORE_CONTRACT_DEPLOY,

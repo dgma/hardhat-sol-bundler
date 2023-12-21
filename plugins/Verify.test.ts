@@ -1,7 +1,7 @@
 import { TASK_VERIFY_VERIFY } from "@nomicfoundation/hardhat-verify/internal/task-names";
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
-import { type IGlobalState } from "../";
-import * as stateFabric from "../state";
+import { type IGlobalState } from "../src";
+import * as stateFabric from "../src/state";
 import { VerifyPlugin } from "./Verify";
 
 /**
