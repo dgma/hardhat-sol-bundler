@@ -5,10 +5,9 @@ Build, update and redeploy smart contracts with hardhat with one config.
 ## Features
 
 - Declarative deployment configuration
-- Deployment runtime accessability
+- Deployment runtime accessability (see hooks, and deployment-output)
 - If selected, deploys only modified contracts (code or constructor arguments)
 - Selective contract verification
-- External contracts as a dependency
 - Human-ridable deployment output
 
 ## Installation
@@ -92,6 +91,33 @@ const deployment = {
 ```
 
 **note** verify plugin uses [@nomicfoundation/hardhat-verify](https://www.npmjs.com/package/@nomicfoundation/hardhat-verify). Please make sure you have configured using config according to official plugin guidance.
+
+## Hooks
+
+Library can be easily extended with a custom plugins via adding them into `deployment.plugins` list. The simple example of the plugin can be found in `plugins/Verify.ts`.
+
+During deployment, sol-bundler can execute additional logic implemented as a lifecycle hooks:
+
+```
+BEFORE_CONTEXT_INITIALIZATION - fires once, before deployment runtime context creation;
+BEFORE_DEPLOYMENT - fires once, after deployment runtime context creation and before deployment logic initiation;
+
+BEFORE_DEPENDENCY_RESOLUTION - fires for each contract in config, before resolving dynamically contract dependencies (arguments and libraries);
+
+BEFORE_CONTRACT_BUILD - fires for each contract in config, before creating contract factory;
+AFTER_CONTRACT_BUILD - fires for each contract in config, after creating contract factory;
+
+BEFORE_CONTRACT_DEPLOY - fires for each contract in config, before contract deployment;
+AFTER_DEPLOYMENT - fires for each contract in config, after contract deployment;
+
+AFTER_CONTEXT_SERIALIZATION: "AFTER_CONTEXT_SERIALIZATION" - fires for each contract in config, after deployment runtime context serialization (preparation for storing output into lock file);
+
+AFTER_CONTRACT_DEPLOY - fires once, after all contracts deployment;
+```
+
+## Deployment output
+
+TBD
 
 ## Contributing
 

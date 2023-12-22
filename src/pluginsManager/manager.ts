@@ -55,7 +55,7 @@ function _addHandlersToHook(pluginHookName: HookKeys, hook: HookFn) {
 export async function on(
   hookName: HookKeys,
   hre: HardhatRuntimeEnvironment,
-  state?: IState<IGlobalState>,
+  state: IState<IGlobalState>,
   contractState?: IState<IDeployingContractState>,
 ) {
   if (!_handlers[hookName]) {
