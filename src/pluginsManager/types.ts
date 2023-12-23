@@ -6,7 +6,7 @@ import { type Hooks } from "./constants";
 export type HookKeys = keyof typeof Hooks;
 export type HookFn = (
   hre: HardhatRuntimeEnvironment,
-  state?: IState<IGlobalState>,
+  state: IState<IGlobalState>,
   contractState?: IState<IDeployingContractState>,
 ) => Promise<void>;
 

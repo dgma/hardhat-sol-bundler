@@ -1,4 +1,6 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
+import { type IGlobalState } from "../deploy";
+import { type IState } from "../state/types";
 import { Hooks } from "./constants";
 import * as PluginsManager from "./manager";
 
@@ -34,10 +36,14 @@ describe("PluginsManager", () => {
       };
       PluginsManager.registerPlugin(plugin);
 
-      await PluginsManager.on(Hooks.AFTER_CONTRACT_BUILD, mockHre);
+      await PluginsManager.on(
+        Hooks.AFTER_CONTRACT_BUILD,
+        mockHre,
+        {} as IState<IGlobalState>,
+      );
 
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith(mockHre, undefined, undefined);
+      expect(spy).toHaveBeenCalledWith(mockHre, {}, undefined);
     });
   });
 });
