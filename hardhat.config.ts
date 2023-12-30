@@ -1,11 +1,12 @@
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
+import "@openzeppelin/hardhat-upgrades";
 import { VerifyPlugin } from "./plugins/Verify";
-import { dynamicAddress } from "./src";
+import { dynamicAddress, SupportedProxies } from "./src";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: "0.8.20",
   paths: {
     sources: "./testData",
     tests: "./integration",
@@ -16,6 +17,18 @@ const config: HardhatUserConfig = {
         plugins: [VerifyPlugin],
         config: {
           TestLibrary: {},
+          TestUpgradableContract: {
+            proxy: {
+              type: SupportedProxies.CLASSIC,
+              unsafeAllow: ["external-library-linking"],
+            },
+            args: ["hello"],
+            options: {
+              libs: {
+                TestLibrary: dynamicAddress("TestLibrary"),
+              },
+            },
+          },
           TestContract: {
             args: ["hello"],
             options: {

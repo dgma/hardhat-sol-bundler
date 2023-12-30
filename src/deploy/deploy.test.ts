@@ -1,6 +1,7 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 import { Hooks, type HookKeys } from "../pluginsManager";
 import { type IState } from "../state";
+import { SupportedProxies } from "./constants";
 import { default as deploy } from "./deploy";
 import {
   type IGlobalState,
@@ -27,6 +28,7 @@ jest.mock("./context", () => ({
 }));
 
 jest.mock("./utils", () => ({
+  ...jest.requireActual("./utils"),
   getDeployment: () => mockGetDeployment(),
   saveDeployment: () => mockSaveDeployment(),
 }));
@@ -52,12 +54,6 @@ describe("deploy", () => {
   const mockGetContractFactory = jest.fn(() => ({
     bytecode: "bytecode",
     deploy: mockContractDeploy,
-  }));
-
-  mockGetDeployment.mockImplementation(() => ({
-    config: {
-      ContractName: {},
-    },
   }));
 
   const hre = {
@@ -90,7 +86,15 @@ describe("deploy", () => {
   };
 
   beforeEach(async () => {
+    mockGetDeployment.mockImplementation(() => ({
+      config: {
+        [name]: {
+          args: constructorArguments,
+        },
+      },
+    }));
     mockCreate
+      .mockReset()
       .mockImplementationOnce(() => state)
       .mockImplementationOnce(() => contractState);
   });
@@ -108,19 +112,11 @@ describe("deploy", () => {
   });
 
   it("should call factory for contract deployment initiation", async () => {
-    mockCreate
-      .mockReset()
-      .mockImplementationOnce(() => state)
-      .mockImplementationOnce(() => contractState);
     await deploy(hre);
     expect(mockGetContractFactory).toHaveBeenCalledWith(name, factoryOptions);
   });
 
   it("should call plugin lifecycle hooks during deployment", async () => {
-    mockCreate
-      .mockReset()
-      .mockImplementationOnce(() => state)
-      .mockImplementationOnce(() => contractState);
     await deploy(hre);
 
     expect(mockOn).toHaveBeenNthCalledWith(
@@ -239,5 +235,91 @@ describe("deploy", () => {
     await deploy(hre);
     expect(mockGetContractFactory).toHaveBeenCalled();
     expect(mockContractDeploy).toHaveBeenCalledWith(...constructorArguments);
+  });
+
+  describe("UUPSUpgradeable openzeppelin proxy", () => {
+    const unsafeAllow = ["external-library-linking"];
+
+    const mockDeployProxy = jest.fn(() => ({
+      waitForDeployment: mockWaitForDeployment,
+    }));
+    const mockUpgradeProxy = jest.fn(() => ({
+      waitForDeployment: mockWaitForDeployment,
+    }));
+
+    const hre = {
+      ethers: {
+        getContractFactory: mockGetContractFactory,
+      },
+      upgrades: {
+        deployProxy: mockDeployProxy,
+        upgradeProxy: mockUpgradeProxy,
+      },
+    } as any;
+
+    beforeEach(() => {
+      mockGetDeployment.mockImplementation(() => ({
+        config: {
+          ContractName: {
+            proxy: {
+              type: SupportedProxies.CLASSIC,
+              unsafeAllow,
+            },
+            args: constructorArguments,
+          },
+        },
+      }));
+    });
+    it("should support deployment deployment with initializer", async () => {
+      await deploy(hre);
+
+      expect(mockDeployProxy).toHaveBeenCalledWith(
+        contractState.value().factory,
+        constructorArguments,
+        {
+          unsafeAllow,
+        },
+      );
+      expect(mockUpgradeProxy).not.toHaveBeenCalled();
+      expect(mockWaitForDeployment).toHaveBeenCalled();
+    });
+
+    it("should support upgrade with initializer", async () => {
+      const proxyAddress = `0x${name}`;
+      const customState = {
+        value: () => ({
+          ctx: {
+            [name]: {
+              factoryByteCode: "already-deployed-bytecode",
+              args: constructorArguments,
+              address: proxyAddress,
+            },
+          },
+          deployedContracts: [],
+        }),
+        update: mockUpdateState,
+      };
+
+      mockCreate
+        .mockReset()
+        .mockImplementationOnce(() => customState)
+        .mockImplementationOnce(() => contractState);
+
+      await deploy(hre);
+
+      expect(mockUpgradeProxy).toHaveBeenCalledWith(
+        proxyAddress,
+        contractState.value().factory,
+        {
+          call: {
+            fn: "upgradeCallBack",
+            args: constructorArguments,
+          },
+          unsafeAllow,
+        },
+      );
+      expect(mockDeployProxy).not.toHaveBeenCalled();
+      expect(mockWaitForDeployment).toHaveBeenCalled();
+    });
   });
 });

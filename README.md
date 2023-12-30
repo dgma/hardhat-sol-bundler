@@ -5,7 +5,7 @@ Build, update and redeploy smart contracts with hardhat with one config.
 ## Features
 
 - Declarative deployment configuration
-- Deployment runtime accessability (see hooks, and deployment-output)
+- Deployment runtime accessibility (see [hooks](#hooks) and [deployment-output](#deployment-output))
 - If selected, deploys only modified contracts (code or constructor arguments)
 - Selective contract verification
 - Human-ridable deployment output
@@ -84,8 +84,8 @@ const deployment = {
   config: {
     TestContract: {
       // set a contract level verification. Overrides global verification
-      verify: true
-    }
+      verify: true,
+    },
   },
 };
 ```

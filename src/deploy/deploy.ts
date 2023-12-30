@@ -1,9 +1,67 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 import { Hooks, PluginsManager } from "../pluginsManager";
 import * as stateFabric from "../state";
+import { SupportedProxies } from "./constants";
 import * as Context from "./context";
-import { type IGlobalState, type IDeployingContractState } from "./types";
-import { getDeployment, saveDeployment } from "./utils";
+import {
+  type IGlobalState,
+  type IDeployingContractState,
+  type ProxyUnsafeAllow,
+} from "./types";
+import { getDeployment, saveDeployment, arrayClone } from "./utils";
+
+type ContractState = stateFabric.IState<IDeployingContractState>;
+type GlobalState = stateFabric.IState<IGlobalState>;
+
+async function deployOrUpdateClassic(
+  hre: HardhatRuntimeEnvironment,
+  state: GlobalState,
+  contractState: ContractState,
+  unsafeAllow: ProxyUnsafeAllow[],
+) {
+  const contractLockData = state.value().ctx[contractState.value().name];
+  const factory = contractState.value().factory!;
+  const initializerArgs = contractState.value().constructorArguments;
+  const isFirstTimeDeploy = !contractLockData?.factoryByteCode;
+  let contract: IDeployingContractState["contract"];
+  if (isFirstTimeDeploy) {
+    contract = await hre.upgrades.deployProxy(factory, initializerArgs, {
+      unsafeAllow,
+    });
+  } else {
+    contract = await hre.upgrades.upgradeProxy(
+      contractLockData!.address!,
+      factory,
+      {
+        call: {
+          fn: "upgradeCallBack",
+          args: initializerArgs,
+        },
+        unsafeAllow,
+      },
+    );
+  }
+
+  await contract.waitForDeployment();
+  contractState.update((prevState) => ({
+    ...prevState,
+    contract,
+    proxy: SupportedProxies.CLASSIC,
+  }));
+}
+
+async function simpleDeploy(contractState: ContractState) {
+  const contract = await contractState
+    .value()
+    ?.factory?.deploy(...contractState.value().constructorArguments)!;
+
+  await contract.waitForDeployment();
+
+  contractState.update((prevState) => ({
+    ...prevState,
+    contract,
+  }));
+}
 
 export default async function deploy(hre: HardhatRuntimeEnvironment) {
   const state = stateFabric.create<IGlobalState>({
@@ -17,96 +75,108 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
 
   await PluginsManager.on(Hooks.BEFORE_DEPLOYMENT, hre, state);
 
-  for (const contractToDeploy of Object.keys(getDeployment(hre).config)) {
-    const contractState = stateFabric.create<IDeployingContractState>({
-      name: contractToDeploy,
-      factoryOptions: {},
-      constructorArguments: [],
-    });
+  const config = getDeployment(hre).config;
 
-    await PluginsManager.on(
-      Hooks.BEFORE_DEPENDENCY_RESOLUTION,
-      hre,
-      state,
-      contractState,
+  try {
+    for (const contractToDeploy of Object.keys(config)) {
+      const contractState = stateFabric.create<IDeployingContractState>({
+        name: contractToDeploy,
+        factoryOptions: {},
+        constructorArguments: [],
+      });
+
+      await PluginsManager.on(
+        Hooks.BEFORE_DEPENDENCY_RESOLUTION,
+        hre,
+        state,
+        contractState,
+      );
+
+      await Context.resolveDeps(hre, state, contractState);
+
+      await PluginsManager.on(
+        Hooks.BEFORE_CONTRACT_BUILD,
+        hre,
+        state,
+        contractState,
+      );
+
+      const factory = await hre.ethers.getContractFactory(
+        contractState.value().name,
+        contractState.value().factoryOptions,
+      );
+
+      contractState.update((prevState) => ({
+        ...prevState,
+        factory,
+      }));
+
+      await PluginsManager.on(
+        Hooks.AFTER_CONTRACT_BUILD,
+        hre,
+        state,
+        contractState,
+      );
+
+      const isSameByteCode =
+        contractState.value()?.factory?.bytecode ===
+        state.value().ctx[contractToDeploy]?.factoryByteCode;
+
+      const isSameArguments =
+        JSON.stringify(contractState.value().constructorArguments) ===
+        JSON.stringify(state.value().ctx[contractToDeploy]?.args);
+
+      if (isSameByteCode && isSameArguments) continue;
+
+      await PluginsManager.on(
+        Hooks.BEFORE_CONTRACT_DEPLOY,
+        hre,
+        state,
+        contractState,
+      );
+
+      switch (config[contractToDeploy]?.proxy?.type) {
+        case SupportedProxies.CLASSIC:
+          await deployOrUpdateClassic(
+            hre,
+            state,
+            contractState,
+            arrayClone(config[contractToDeploy]?.proxy?.unsafeAllow),
+          );
+          break;
+        default:
+          await simpleDeploy(contractState);
+          break;
+      }
+
+      await PluginsManager.on(
+        Hooks.AFTER_CONTRACT_DEPLOY,
+        hre,
+        state,
+        contractState,
+      );
+
+      await Context.serialize(hre, state, contractState);
+
+      await PluginsManager.on(
+        Hooks.AFTER_CONTEXT_SERIALIZATION,
+        hre,
+        state,
+        contractState,
+      );
+
+      state.update((prevState) => ({
+        ...prevState,
+        deployedContracts: state
+          .value()
+          .deployedContracts.concat(contractToDeploy),
+      }));
+    }
+  } catch (error) {
+    console.error(
+      "Partial deployment success, save current results. Error:",
+      error,
     );
-
-    await Context.resolveDeps(hre, state, contractState);
-
-    await PluginsManager.on(
-      Hooks.BEFORE_CONTRACT_BUILD,
-      hre,
-      state,
-      contractState,
-    );
-
-    const factory = await hre?.ethers?.getContractFactory(
-      contractState.value().name,
-      contractState.value().factoryOptions,
-    );
-
-    contractState.update((prevState) => ({
-      ...prevState,
-      factory,
-    }));
-
-    await PluginsManager.on(
-      Hooks.AFTER_CONTRACT_BUILD,
-      hre,
-      state,
-      contractState,
-    );
-
-    const isSameByteCode =
-      contractState.value()?.factory?.bytecode ===
-      state.value().ctx[contractToDeploy]?.factoryByteCode;
-
-    const isSameArguments =
-      JSON.stringify(contractState.value().constructorArguments) ===
-      JSON.stringify(state.value().ctx[contractToDeploy]?.args);
-
-    if (isSameByteCode && isSameArguments) continue;
-
-    await PluginsManager.on(
-      Hooks.BEFORE_CONTRACT_DEPLOY,
-      hre,
-      state,
-      contractState,
-    );
-
-    const contract = await contractState
-      .value()
-      ?.factory?.deploy(...contractState.value().constructorArguments);
-
-    await contract?.waitForDeployment();
-
-    contractState.update((prevState) => ({
-      ...prevState,
-      contract,
-    }));
-
-    await PluginsManager.on(
-      Hooks.AFTER_CONTRACT_DEPLOY,
-      hre,
-      state,
-      contractState,
-    );
-
-    await Context.serialize(hre, state, contractState);
-
-    await PluginsManager.on(
-      Hooks.AFTER_CONTEXT_SERIALIZATION,
-      hre,
-      state,
-      contractState,
-    );
-
-    state.update((prevState) => ({
-      ...prevState,
-      deployedContracts: state
-        .value()
-        .deployedContracts.concat(contractToDeploy),
-    }));
   }
 
   await PluginsManager.on(Hooks.AFTER_DEPLOYMENT, hre, state);
