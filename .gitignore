@@ -3,3 +3,4 @@ cache
 artifacts
 .vscode
 dist
+local.deployment-lock.json

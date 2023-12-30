@@ -1,0 +1,21 @@
+name: Setup
+description: Install and cache npm and node_modules to reuse them in workflows and jobs
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        cache: "npm"
+        node-version: 18.12.x
+        registry-url: "https://registry.npmjs.org"
+        scope: '@dgma'
+        always-auth: 'true'
+    - uses: actions/cache@v3
+      id: cache
+      with:
+        path: "**/node_modules"
+        key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
+    - run: npm ci
+      shell: bash
+      if: steps.cache.outputs.cache-hit != 'true'

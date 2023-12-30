@@ -9,9 +9,19 @@ import { VerifyPlugin } from "./Verify";
  */
 jest.mock("hardhat/config", () => ({
   ...jest.requireActual("hardhat/config"),
-  task: () => ({
-    setAction: () => ({}),
-  }),
+  task: () => {
+    class Task {
+      constructor() {}
+      setAction() {
+        return this;
+      }
+      addParam() {
+        return this;
+      }
+    }
+
+    return new Task();
+  },
 }));
 
 describe("VerifyPlugin", () => {

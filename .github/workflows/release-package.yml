@@ -2,17 +2,17 @@ name: Node.js Package
 on:
   release:
     types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   publish-pkg:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18.12.x"
-          registry-url: "https://registry.npmjs.org"
-          scope: '@dgma'
-          always-auth: 'true'
+      - uses: ./.github/actions/setup
       - run: npm ci
       - run: npm run test:integration
       - run: npm run build:pkg

@@ -3,20 +3,25 @@ on:
   push:
     branches-ignore:
       - "main"
+
+permissions:
+  contents: read
+  packages: read
+  
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18.12.x"
-      - name: Install modules
-        run: npm i
-      - name: Typecheck
-        run: npm run typecheck;
-      - name: Run linitng
-        run: npm run lint
+      - uses: ./.github/actions/setup
+      - run: npm run typecheck;
+      - run: npm run lint
+  test:
+      needs: lint
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
       - name: Run unit tests
         run: npm run test:unit
       - name: Run integration tests

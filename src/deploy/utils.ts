@@ -39,3 +39,5 @@ export const saveDeployment = async (
     fs.writeFileSync(lockFile, JSON.stringify(newLock));
   }
 };
+
+export const arrayClone = <T>(arr: T[] = []) => [...arr];

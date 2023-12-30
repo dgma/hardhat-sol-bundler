@@ -97,9 +97,13 @@ export const serialize: ContextManipulator = async (
 ) => {
   const cst = contractState?.value();
   if (cst) {
+    const abi = cst.contract!.interface.fragments.concat(
+      cst.proxy ? cst.factory!.interface.fragments : [],
+    );
+
     const ctxUpdate: Partial<ILockContract> = {
       address: await cst?.contract?.getAddress(),
-      abi: cst?.contract?.interface?.fragments,
+      abi,
       factoryByteCode: cst?.factory?.bytecode,
       args: cst.constructorArguments,
     };
