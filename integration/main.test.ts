@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import hre from "hardhat";
-import { type IGlobalState, solBundler } from "../src";
+import { solBundler } from "../src";
 
 describe("main", () => {
   it("should deploy contracts based on config file", async () => {
-    const { ctx, deployedContracts } = (await solBundler(hre)) as IGlobalState;
+    const { ctx, deployedContracts } = await solBundler(hre);
     expect(deployedContracts).to.eql([
       "TestLibrary",
       "TestUpgradableContract",
