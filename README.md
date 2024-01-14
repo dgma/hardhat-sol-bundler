@@ -94,9 +94,9 @@ const deployment = {
 
 ## Hooks
 
-Library can be easily extended with a custom plugins via adding them into `deployment.plugins` list. The simple example of the plugin can be found in `plugins/Verify.ts`.
+The library can be easily extended with custom plugins by adding them to `deployment.plugins` list. A simple example of the plugin can be found in `plugins/Verify.ts`.
 
-During deployment, sol-bundler can execute additional logic implemented as a lifecycle hooks:
+During deployment, sol-bundler can execute additional logic implemented as lifecycle hooks:
 
 ```
 BEFORE_CONTEXT_INITIALIZATION - fires once, before deployment runtime context creation;
@@ -117,7 +117,19 @@ AFTER_CONTRACT_DEPLOY - fires once, after all contracts deployment;
 
 ## Deployment output
 
-TBD
+Deployment script can be easily attached to the other tasks or libraries:
+
+```ts
+import hre from "hardhat";
+import { solBundler } from "@dgma/hardhat-sol-bundler";
+
+const { ctx, deployedContracts } = await solBundler(hre);
+
+// add custom logic
+if (deployedContracts.includes("MyContract")) {
+  console.log("do something");
+}
+```
 
 ## Contributing
 
