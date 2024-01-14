@@ -5,8 +5,10 @@ import { default as solBundler } from "./main";
 const DEPLOY_BUNDLE_TASK = "deploy-bundle";
 
 task(DEPLOY_BUNDLE_TASK, "Build and deploys smart contracts")
-  .addParam("noCompile", "Don't compile before running this task")
-  .setAction(async (_, hre) => {
-    await hre.run(TASK_COMPILE);
+  .addOptionalParam("noCompile", "Don't compile before running this task")
+  .setAction(async ({ noCompile }, hre) => {
+    if (!noCompile) {
+      await hre.run(TASK_COMPILE);
+    }
     return solBundler(hre);
   });
