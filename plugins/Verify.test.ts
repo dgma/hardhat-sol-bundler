@@ -18,6 +18,9 @@ jest.mock("hardhat/config", () => ({
       addParam() {
         return this;
       }
+      addOptionalParam() {
+        return this;
+      }
     }
 
     return new Task();

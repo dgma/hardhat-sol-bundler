@@ -55,6 +55,10 @@ export default config;
 npx hardhat deploy-bundle
 ```
 
+```sh
+npx hardhat deploy-bundle --no-compile true
+```
+
 ## Configuration
 
 By default, hardhat-sol-bundler supports only deployment runtime accessability.
