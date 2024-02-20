@@ -8,7 +8,8 @@ describe("main", () => {
     expect(deployedContracts).to.eql([
       "TestLibrary",
       "TestUpgradableContract",
-      "TestContract",
+      "TestContractFirst",
+      "TestContractSecond",
     ]);
     expect(Object.keys(ctx)).to.eql(deployedContracts);
   });

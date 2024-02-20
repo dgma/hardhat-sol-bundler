@@ -74,6 +74,7 @@ describe("deploy", () => {
   };
   const contractState = {
     value: () => ({
+      key: name,
       name,
       factoryOptions,
       constructorArguments,

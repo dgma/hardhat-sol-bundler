@@ -112,7 +112,7 @@ export const serialize: ContextManipulator = async (
       ...prevState,
       ctx: {
         ...prevState.ctx,
-        [cst.name]: ctxUpdate,
+        [cst.key]: ctxUpdate,
       },
     }));
   }
@@ -126,7 +126,7 @@ export const resolveDeps: ContextManipulator = async (
   const ctx = state?.value().ctx;
   const { config } = getDeployment(hre);
 
-  const contractConfig = config[contractState?.value().name as string];
+  const contractConfig = config[contractState?.value().key as string];
 
   if (contractConfig && ctx) {
     const factoryOptions = {

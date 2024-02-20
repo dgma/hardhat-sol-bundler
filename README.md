@@ -30,8 +30,18 @@ const config: HardhatUserConfig = {
       deployment: {
         config: {
           TestLibrary: {},
-          TestContract: {
-            args: ["hello"],
+          TestContractOne: {
+            contractName: "TestContract",
+            args: ["hello one"],
+            options: {
+              libs: {
+                TestLibrary: dynamicAddress("TestLibrary"),
+              },
+            },
+          },
+          TestContractTwo: {
+            contractName: "TestContract",
+            args: ["hello two"],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),
@@ -46,6 +56,8 @@ const config: HardhatUserConfig = {
 
 export default config;
 ```
+
+`contractName` property is optional and only needed if configuration includes multiple instances of one contract
 
 **note**: dependant contract must be located above
 
