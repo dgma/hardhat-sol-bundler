@@ -21,7 +21,7 @@ jest.mock("./utils", () => ({
 describe("context", () => {
   const hre = {
     network: {
-      name: "unit",
+      name: "someNetwork",
     },
   } as HardhatRuntimeEnvironment;
   afterEach(() => {
@@ -36,7 +36,7 @@ describe("context", () => {
     }));
 
     mockGetLock.mockImplementation(() => ({
-      unit: {
+      someNetwork: {
         Contract: {
           address: "0xaddress",
         },
@@ -111,10 +111,12 @@ describe("context", () => {
         deployedContracts: [""],
       });
       const contractState = stateFabric.create({
+        key: "Contract2",
         name: "Contract2",
       } as IDeployingContractState);
       await resolveDeps(hre, state, contractState);
       expect(contractState.value()).toEqual({
+        key: "Contract2",
         name: "Contract2",
         factoryOptions: {
           libraries: {
@@ -147,6 +149,7 @@ describe("context", () => {
         },
         constructorArguments: expectedContractState.args,
         name: "ContractName",
+        key: "ContractName",
       } as IDeployingContractState);
       await serialize(hre, state, contractState);
 

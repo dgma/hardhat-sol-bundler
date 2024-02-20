@@ -50,6 +50,7 @@ export interface IDeploymentConfig {
   verify?: boolean;
   config: {
     [name: string]: {
+      contractName?: string;
       proxy?: {
         type: ProxyType;
         unsafeAllow?: ProxyUnsafeAllow[];
@@ -69,6 +70,7 @@ export interface IGlobalState {
 }
 
 export interface IDeployingContractState extends ILockContract {
+  key: string;
   name: string;
   factoryOptions: FactoryOptions;
   constructorArguments: ConstructorArgument[];

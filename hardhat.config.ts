@@ -29,8 +29,18 @@ const config: HardhatUserConfig = {
               },
             },
           },
-          TestContract: {
-            args: ["hello"],
+          TestContractFirst: {
+            contractName: "TestContract",
+            args: ["hello first"],
+            options: {
+              libs: {
+                TestLibrary: dynamicAddress("TestLibrary"),
+              },
+            },
+          },
+          TestContractSecond: {
+            contractName: "TestContract",
+            args: ["hello second"],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),

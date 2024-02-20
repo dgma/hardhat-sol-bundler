@@ -19,7 +19,7 @@ async function deployOrUpdateClassic(
   contractState: ContractState,
   unsafeAllow: ProxyUnsafeAllow[],
 ) {
-  const contractLockData = state.value().ctx[contractState.value().name];
+  const contractLockData = state.value().ctx[contractState.value().key];
   const factory = contractState.value().factory!;
   const initializerArgs = contractState.value().constructorArguments;
   const isFirstTimeDeploy = !contractLockData?.factoryByteCode;
@@ -80,7 +80,8 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
   try {
     for (const contractToDeploy of Object.keys(config)) {
       const contractState = stateFabric.create<IDeployingContractState>({
-        name: contractToDeploy,
+        key: contractToDeploy,
+        name: config[contractToDeploy].contractName || contractToDeploy,
         factoryOptions: {},
         constructorArguments: [],
       });
