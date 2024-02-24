@@ -2,6 +2,7 @@ import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
 import "@openzeppelin/hardhat-upgrades";
+import { parseEther } from "ethers";
 import { VerifyPlugin } from "./plugins/Verify";
 import { dynamicAddress, SupportedProxies } from "./src";
 
@@ -31,7 +32,7 @@ const config: HardhatUserConfig = {
           },
           TestContractFirst: {
             contractName: "TestContract",
-            args: ["hello first"],
+            args: ["hello", parseEther("0.1")],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),
@@ -40,7 +41,7 @@ const config: HardhatUserConfig = {
           },
           TestContractSecond: {
             contractName: "TestContract",
-            args: ["hello second"],
+            args: ["hello", parseEther("0.2")],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),
