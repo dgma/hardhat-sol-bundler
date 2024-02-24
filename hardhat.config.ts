@@ -1,3 +1,4 @@
+import { parseEther } from "ethers";
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
@@ -31,7 +32,7 @@ const config: HardhatUserConfig = {
           },
           TestContractFirst: {
             contractName: "TestContract",
-            args: ["hello first"],
+            args: ["hello", parseEther("0.1")],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),
@@ -40,7 +41,7 @@ const config: HardhatUserConfig = {
           },
           TestContractSecond: {
             contractName: "TestContract",
-            args: ["hello second"],
+            args: ["hello", parseEther("0.2")],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),

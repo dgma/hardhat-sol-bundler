@@ -36,8 +36,11 @@ export const saveDeployment = async (
       },
     };
 
-    fs.writeFileSync(lockFile, JSON.stringify(newLock));
+    fs.writeFileSync(lockFile, JSON.stringify(newLock, stringifyReplacer));
   }
 };
 
 export const arrayClone = <T>(arr: T[] = []) => [...arr];
+
+export const stringifyReplacer = (_: string, value: any) =>
+  typeof value === "bigint" ? `${value.toString()}::n` : value;

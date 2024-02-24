@@ -8,7 +8,12 @@ import {
   type IDeployingContractState,
   type ProxyUnsafeAllow,
 } from "./types";
-import { getDeployment, saveDeployment, arrayClone } from "./utils";
+import {
+  getDeployment,
+  saveDeployment,
+  arrayClone,
+  stringifyReplacer,
+} from "./utils";
 
 type ContractState = stateFabric.IState<IDeployingContractState>;
 type GlobalState = stateFabric.IState<IGlobalState>;
@@ -124,8 +129,14 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
         state.value().ctx[contractToDeploy]?.factoryByteCode;
 
       const isSameArguments =
-        JSON.stringify(contractState.value().constructorArguments) ===
-        JSON.stringify(state.value().ctx[contractToDeploy]?.args);
+        JSON.stringify(
+          contractState.value().constructorArguments,
+          stringifyReplacer,
+        ) ===
+        JSON.stringify(
+          state.value().ctx[contractToDeploy]?.args,
+          stringifyReplacer,
+        );
 
       if (isSameByteCode && isSameArguments) continue;
 

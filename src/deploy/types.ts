@@ -4,7 +4,7 @@ import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 import { type IPlugin } from "../pluginsManager";
 import { SupportedProxies } from "./constants";
 
-export type ConstructorArgument = number | string | object;
+export type ConstructorArgument = number | string | object | bigint;
 
 export type ProxyType = keyof typeof SupportedProxies;
 

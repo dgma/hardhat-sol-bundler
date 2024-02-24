@@ -1,7 +1,12 @@
 import { type HardhatRuntimeEnvironment } from "hardhat/types/runtime";
 import { type IState } from "../state";
 import { type IGlobalState, type DeploymentContext } from "./types";
-import { getDeployment, saveDeployment, getLock } from "./utils";
+import {
+  getDeployment,
+  saveDeployment,
+  getLock,
+  stringifyReplacer,
+} from "./utils";
 
 const mockWriteFileSync = jest.fn();
 const mockExistsSync = jest.fn();
@@ -136,6 +141,14 @@ describe("saveDeployment", () => {
       JSON.stringify({
         unit: state.value().ctx,
       }),
+    );
+  });
+});
+
+describe("stringifyReplacer", () => {
+  it("should return properly serialize all values", () => {
+    expect(JSON.stringify([1, "1", 1n], stringifyReplacer)).toEqual(
+      '[1,"1","1::n"]',
     );
   });
 });
