@@ -15,6 +15,7 @@ export interface ILockContract {
   factoryByteCode?: string;
   args?: ConstructorArgument[];
   proxy?: ProxyType;
+  contractName?: string;
 }
 
 export type DeploymentContext = Record<string, ILockContract>;

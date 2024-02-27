@@ -136,6 +136,7 @@ describe("context", () => {
         abi: [] as ethers.Interface["fragments"],
         factoryByteCode: "bytecode",
         args: [1, 2, 3],
+        contractName: "ContractName",
       };
       const contractState = stateFabric.create({
         contract: {

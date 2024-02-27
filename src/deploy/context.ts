@@ -66,7 +66,7 @@ async function createDeploymentContext({
         ...contract,
         interface: (
           await hre.ethers.getContractAt(
-            contractKey,
+            contract.contractName || contractKey,
             contract.address as string,
           )
         ).interface,
@@ -106,6 +106,7 @@ export const serialize: ContextManipulator = async (
       abi,
       factoryByteCode: cst?.factory?.bytecode,
       args: cst.constructorArguments,
+      contractName: cst.name,
     };
 
     state?.update((prevState) => ({
