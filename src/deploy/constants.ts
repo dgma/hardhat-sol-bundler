@@ -1,3 +1,4 @@
 export const SupportedProxies = {
-  CLASSIC: "CLASSIC",
+  TRANSPARENT: "transparent",
+  UUPS: "uups",
 } as const;

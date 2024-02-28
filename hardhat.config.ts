@@ -18,9 +18,21 @@ const config: HardhatUserConfig = {
         plugins: [VerifyPlugin],
         config: {
           TestLibrary: {},
-          TestUpgradableContract: {
+          TestTransparentUpgradable: {
             proxy: {
-              type: SupportedProxies.CLASSIC,
+              type: SupportedProxies.TRANSPARENT,
+              unsafeAllow: ["external-library-linking"],
+            },
+            args: ["hello"],
+            options: {
+              libs: {
+                TestLibrary: dynamicAddress("TestLibrary"),
+              },
+            },
+          },
+          testUUPSUpgradable: {
+            proxy: {
+              type: SupportedProxies.UUPS,
               unsafeAllow: ["external-library-linking"],
             },
             args: ["hello"],

@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 
 import {TestLibrary} from "./testLibrary.sol";
 
-contract TestUpgradableContract is Initializable {
+contract testUUPSUpgradable is Initializable, UUPSUpgradeable {
     uint256 private len;
 
     uint64 constant VERSION = 1;
@@ -21,4 +22,6 @@ contract TestUpgradableContract is Initializable {
     function upgradeCallBack(string memory word) external reinitializer(VERSION) {
         _init(word);
     }
+
+    function _authorizeUpgrade(address newImplementation) internal override {}
 }

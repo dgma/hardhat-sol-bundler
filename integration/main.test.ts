@@ -7,7 +7,8 @@ describe("main", () => {
     const { ctx, deployedContracts } = await solBundler(hre);
     expect(deployedContracts).to.eql([
       "TestLibrary",
-      "TestUpgradableContract",
+      "TestTransparentUpgradable",
+      "testUUPSUpgradable",
       "TestContractFirst",
       "TestContractSecond",
     ]);

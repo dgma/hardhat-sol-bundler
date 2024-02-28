@@ -238,7 +238,7 @@ describe("deploy", () => {
     expect(mockContractDeploy).toHaveBeenCalledWith(...constructorArguments);
   });
 
-  describe("UUPSUpgradeable openzeppelin proxy", () => {
+  describe("Transparent openzeppelin proxy", () => {
     const unsafeAllow = ["external-library-linking"];
 
     const mockDeployProxy = jest.fn(() => ({
@@ -263,7 +263,7 @@ describe("deploy", () => {
         config: {
           ContractName: {
             proxy: {
-              type: SupportedProxies.CLASSIC,
+              type: SupportedProxies.TRANSPARENT,
               unsafeAllow,
             },
             args: constructorArguments,
@@ -278,6 +278,7 @@ describe("deploy", () => {
         contractState.value().factory,
         constructorArguments,
         {
+          kind: SupportedProxies.TRANSPARENT,
           unsafeAllow,
         },
       );
