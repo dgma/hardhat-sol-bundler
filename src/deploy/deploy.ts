@@ -7,6 +7,7 @@ import {
   type IGlobalState,
   type IDeployingContractState,
   type ProxyUnsafeAllow,
+  type ProxyType,
 } from "./types";
 import {
   getDeployment,
@@ -23,6 +24,7 @@ async function deployOrUpdateClassic(
   state: GlobalState,
   contractState: ContractState,
   unsafeAllow: ProxyUnsafeAllow[],
+  kind: ProxyType = SupportedProxies.TRANSPARENT,
 ) {
   const contractLockData = state.value().ctx[contractState.value().key];
   const factory = contractState.value().factory!;
@@ -32,6 +34,7 @@ async function deployOrUpdateClassic(
   if (isFirstTimeDeploy) {
     contract = await hre.upgrades.deployProxy(factory, initializerArgs, {
       unsafeAllow,
+      kind,
     });
   } else {
     contract = await hre.upgrades.upgradeProxy(
@@ -51,7 +54,7 @@ async function deployOrUpdateClassic(
   contractState.update((prevState) => ({
     ...prevState,
     contract,
-    proxy: SupportedProxies.CLASSIC,
+    proxy: SupportedProxies.TRANSPARENT,
   }));
 }
 
@@ -148,12 +151,21 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
       );
 
       switch (config[contractToDeploy]?.proxy?.type) {
-        case SupportedProxies.CLASSIC:
+        case SupportedProxies.TRANSPARENT:
           await deployOrUpdateClassic(
             hre,
             state,
             contractState,
             arrayClone(config[contractToDeploy]?.proxy?.unsafeAllow),
+          );
+          break;
+        case SupportedProxies.UUPS:
+          await deployOrUpdateClassic(
+            hre,
+            state,
+            contractState,
+            arrayClone(config[contractToDeploy]?.proxy?.unsafeAllow),
+            SupportedProxies.UUPS,
           );
           break;
         default:

@@ -6,7 +6,8 @@ import { SupportedProxies } from "./constants";
 
 export type ConstructorArgument = number | string | object | bigint;
 
-export type ProxyType = keyof typeof SupportedProxies;
+export type ProxyType =
+  (typeof SupportedProxies)[keyof typeof SupportedProxies];
 
 export interface ILockContract {
   address?: string;
