@@ -57,7 +57,7 @@ const config: HardhatUserConfig = {
 export default config;
 ```
 
-`contractName` property is optional and only needed if configuration includes multiple instances of one contract
+`contractName` property is optional and only needed if configuration contract key is not the same as contract name
 
 **note**: dependant contract must be located above
 
@@ -73,9 +73,7 @@ npx hardhat deploy-bundle --no-compile true
 
 ## Configuration
 
-By default, hardhat-sol-bundler supports only deployment runtime accessability.
-
-- To deploy only modified contracts, add `lockFile` property to deployment
+- To deploy only modified contracts, add `lockFile` property to deployment:
 
 ```ts
 const deployment = {
@@ -86,7 +84,24 @@ const deployment = {
 };
 ```
 
-- To verify deployed contracts during runtime.
+- To deploy contract as a proxy:
+
+```ts
+import { SupportedProxies } from "@dgma/hardhat-sol-bundler";
+
+const deployment = {
+  lockFile: "deployment-lock.json",
+  config: {
+    TestContract: {
+      proxy: {
+        type: SupportedProxies.CUSTOM
+      }
+    }
+  },
+};
+```
+
+- To verify deployed contracts during runtime:
 
 ```ts
 // no need @nomicfoundation/hardhat-verify if you use @nomicfoundation/hardhat-toolbox
