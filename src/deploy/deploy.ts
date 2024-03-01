@@ -72,6 +72,18 @@ async function simpleDeploy(contractState: ContractState) {
   }));
 }
 
+async function deployOnce(
+  _: HardhatRuntimeEnvironment,
+  state: GlobalState,
+  contractState: ContractState,
+) {
+  const contractLockData = state.value().ctx[contractState.value().key];
+  const isFirstTimeDeploy = !contractLockData?.factoryByteCode;
+  if (isFirstTimeDeploy) {
+    await simpleDeploy(contractState);
+  }
+}
+
 export default async function deploy(hre: HardhatRuntimeEnvironment) {
   const state = stateFabric.create<IGlobalState>({
     ctx: {},
@@ -168,6 +180,9 @@ export default async function deploy(hre: HardhatRuntimeEnvironment) {
             arrayClone(config[contractToDeploy]?.proxy?.unsafeAllow),
             SupportedProxies.UUPS,
           );
+          break;
+        case SupportedProxies.CUSTOM:
+          await deployOnce(hre, state, contractState);
           break;
         default:
           await simpleDeploy(contractState);
