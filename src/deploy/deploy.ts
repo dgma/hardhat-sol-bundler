@@ -7,6 +7,7 @@ import {
   type IGlobalState,
   type IDeployingContractState,
   type ProxyUnsafeAllow,
+  type ProxyType,
 } from "./types";
 import {
   getDeployment,
@@ -56,10 +57,11 @@ async function deployOrUpdateClassic(
   contractState.update((prevState) => ({
     ...prevState,
     contract,
+    proxy: kind,
   }));
 }
 
-async function simpleDeploy(contractState: ContractState) {
+async function simpleDeploy(contractState: ContractState, proxy?: ProxyType) {
   const contract = await contractState
     .value()
     ?.factory?.deploy(...contractState.value().constructorArguments)!;
@@ -69,6 +71,7 @@ async function simpleDeploy(contractState: ContractState) {
   contractState.update((prevState) => ({
     ...prevState,
     contract,
+    proxy,
   }));
 }
 
@@ -76,11 +79,12 @@ async function deployOnce(
   _: HardhatRuntimeEnvironment,
   state: GlobalState,
   contractState: ContractState,
+  proxy = SupportedProxies.CUSTOM,
 ) {
   const contractLockData = state.value().ctx[contractState.value().key];
   const isFirstTimeDeploy = !contractLockData?.factoryByteCode;
   if (isFirstTimeDeploy) {
-    await simpleDeploy(contractState);
+    await simpleDeploy(contractState, proxy);
   }
 }
 

@@ -158,5 +158,39 @@ describe("context", () => {
         ContractName: expectedContractState,
       });
     });
+
+    it("should add abi from factory for proxy", async () => {
+      const state = stateFabric.create({} as IGlobalState);
+      const expectedContractState = {
+        address: "0xaddress",
+        abi: [{} as ethers.ethers.Fragment] as ethers.Interface["fragments"],
+        factoryByteCode: "bytecode",
+        args: [1, 2, 3],
+        contractName: "ContractName",
+      };
+      const contractState = stateFabric.create({
+        contract: {
+          getAddress: async () => expectedContractState.address,
+          interface: {
+            fragments: [] as ethers.Interface["fragments"],
+          },
+        },
+        factory: {
+          bytecode: expectedContractState.factoryByteCode,
+          interface: {
+            fragments: expectedContractState.abi,
+          },
+        },
+        constructorArguments: expectedContractState.args,
+        name: "ContractName",
+        key: "ContractName",
+        proxy: "custom",
+      } as IDeployingContractState);
+      await serialize(hre, state, contractState);
+
+      expect(state.value().ctx).toEqual({
+        ContractName: expectedContractState,
+      });
+    });
   });
 });

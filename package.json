@@ -1,6 +1,6 @@
 {
   "name": "@dgma/hardhat-sol-bundler",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Declarative deployment tool for smart contracts",
   "main": "src/index.js",
   "types": "src/index.d.ts",
