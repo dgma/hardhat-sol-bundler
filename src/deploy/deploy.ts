@@ -7,7 +7,6 @@ import {
   type IGlobalState,
   type IDeployingContractState,
   type ProxyUnsafeAllow,
-  type ProxyType,
 } from "./types";
 import {
   getDeployment,
@@ -18,13 +17,16 @@ import {
 
 type ContractState = stateFabric.IState<IDeployingContractState>;
 type GlobalState = stateFabric.IState<IGlobalState>;
+type ClassicProxyTypes =
+  | typeof SupportedProxies.TRANSPARENT
+  | typeof SupportedProxies.UUPS;
 
 async function deployOrUpdateClassic(
   hre: HardhatRuntimeEnvironment,
   state: GlobalState,
   contractState: ContractState,
   unsafeAllow: ProxyUnsafeAllow[],
-  kind: ProxyType = SupportedProxies.TRANSPARENT,
+  kind: ClassicProxyTypes = SupportedProxies.TRANSPARENT,
 ) {
   const contractLockData = state.value().ctx[contractState.value().key];
   const factory = contractState.value().factory!;
@@ -54,7 +56,6 @@ async function deployOrUpdateClassic(
   contractState.update((prevState) => ({
     ...prevState,
     contract,
-    proxy: SupportedProxies.TRANSPARENT,
   }));
 }
 
