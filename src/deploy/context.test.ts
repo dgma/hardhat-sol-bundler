@@ -163,7 +163,7 @@ describe("context", () => {
       const state = stateFabric.create({} as IGlobalState);
       const expectedContractState = {
         address: "0xaddress",
-        abi: [{} as ethers.ethers.Fragment] as ethers.Interface["fragments"],
+        abi: [] as ethers.Interface["fragments"],
         factoryByteCode: "bytecode",
         args: [1, 2, 3],
         contractName: "ContractName",

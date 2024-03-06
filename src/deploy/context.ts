@@ -98,7 +98,18 @@ export const serialize: ContextManipulator = async (
   const cst = contractState?.value();
   if (cst) {
     const abi = cst.contract!.interface.fragments.concat(
-      cst.proxy ? cst.factory!.interface.fragments : [],
+      cst.proxy
+        ? cst.factory!.interface.fragments.filter((fragment) => {
+            const isNotValid =
+              fragment.type !== "constructor" && fragment.type !== "fallback";
+
+            if (isNotValid) {
+              console.warn(
+                `contract ${cst.name} has intersect fragments for constructor or fallback. Chose those which describes proxy contract`,
+              );
+            }
+          })
+        : [],
     );
 
     const ctxUpdate: Partial<ILockContract> = {
