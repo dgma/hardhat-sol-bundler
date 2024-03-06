@@ -100,14 +100,15 @@ export const serialize: ContextManipulator = async (
     const abi = cst.contract!.interface.fragments.concat(
       cst.proxy
         ? cst.factory!.interface.fragments.filter((fragment) => {
-            const isNotValid =
+            const isValid =
               fragment.type !== "constructor" && fragment.type !== "fallback";
 
-            if (isNotValid) {
+            if (!isValid) {
               console.warn(
                 `contract ${cst.name} has intersect fragments for constructor or fallback. Chose those which describes proxy contract`,
               );
             }
+            return isValid;
           })
         : [],
     );
