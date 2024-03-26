@@ -7,5 +7,5 @@ export default async function solBundler(hre: HardhatRuntimeEnvironment) {
 
   PluginsManager.registerPlugins(plugins);
 
-  return await deploy(hre);
+  return deploy(hre);
 }
