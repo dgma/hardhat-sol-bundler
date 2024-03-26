@@ -3,7 +3,6 @@ import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
 import "@openzeppelin/hardhat-upgrades";
-import { LoggingPlugin } from "./plugins/Logging";
 import { VerifyPlugin } from "./plugins/Verify";
 import { dynamicAddress, SupportedProxies } from "./src";
 
@@ -16,7 +15,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       deployment: {
-        plugins: [VerifyPlugin, LoggingPlugin],
+        plugins: [VerifyPlugin],
         config: {
           LenLibrary: {},
           MockTransparentUpgradable: {
