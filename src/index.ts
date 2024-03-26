@@ -11,4 +11,3 @@ export { SupportedProxies } from "./deploy/constants";
 export * from "./deploy/types";
 export * from "./pluginsManager/types";
 export * from "./state/types";
-export * from "./logger/types";

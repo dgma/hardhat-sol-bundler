@@ -3,15 +3,15 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
-import {TestLibrary} from "./testLibrary.sol";
+import {LenLibrary} from "./LenLibrary.sol";
 
-contract TestTransparentUpgradable is Initializable {
+contract MockTransparentUpgradable is Initializable {
     uint256 private len;
 
     uint64 constant VERSION = 1;
 
     function _init(string memory word) private {
-        len = TestLibrary.messageLen(word);
+        len = LenLibrary.messageLen(word);
     }
 
     function initialize(string memory word) external initializer {

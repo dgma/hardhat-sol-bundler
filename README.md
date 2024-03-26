@@ -139,11 +139,11 @@ BEFORE_CONTRACT_BUILD - fires for each contract in config, before creating contr
 AFTER_CONTRACT_BUILD - fires for each contract in config, after creating contract factory;
 
 BEFORE_CONTRACT_DEPLOY - fires for each contract in config, before contract deployment;
-AFTER_DEPLOYMENT - fires for each contract in config, after contract deployment;
+AFTER_CONTRACT_DEPLOY - fires for each contract in config, after contract deployment;
 
 AFTER_CONTEXT_SERIALIZATION: "AFTER_CONTEXT_SERIALIZATION" - fires for each contract in config, after deployment runtime context serialization (preparation for storing output into lock file);
 
-AFTER_CONTRACT_DEPLOY - fires once, after all contracts deployment;
+AFTER_DEPLOYMENT - fires once, after all contracts deployment;
 ```
 
 ## Deployment output

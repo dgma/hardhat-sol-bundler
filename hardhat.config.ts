@@ -3,6 +3,7 @@ import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-verify";
 import "@nomicfoundation/hardhat-ethers";
 import "@openzeppelin/hardhat-upgrades";
+import { LoggingPlugin } from "./plugins/Logging";
 import { VerifyPlugin } from "./plugins/Verify";
 import { dynamicAddress, SupportedProxies } from "./src";
 
@@ -15,10 +16,10 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       deployment: {
-        plugins: [VerifyPlugin],
+        plugins: [VerifyPlugin, LoggingPlugin],
         config: {
-          TestLibrary: {},
-          TestTransparentUpgradable: {
+          LenLibrary: {},
+          MockTransparentUpgradable: {
             proxy: {
               type: SupportedProxies.TRANSPARENT,
               unsafeAllow: ["external-library-linking"],
@@ -26,11 +27,11 @@ const config: HardhatUserConfig = {
             args: ["hello"],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
-          testUUPSUpgradable: {
+          MockUUPSUpgradable: {
             proxy: {
               type: SupportedProxies.UUPS,
               unsafeAllow: ["external-library-linking"],
@@ -38,25 +39,25 @@ const config: HardhatUserConfig = {
             args: ["hello"],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
-          TestContractFirst: {
-            contractName: "TestContract",
+          MockContractFirst: {
+            contractName: "MockContract",
             args: ["hello", parseEther("0.1")],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
-          TestContractSecond: {
-            contractName: "TestContract",
+          MockContractSecond: {
+            contractName: "MockContract",
             args: ["hello", parseEther("0.2")],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
