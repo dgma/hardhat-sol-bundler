@@ -1,6 +1,6 @@
 # hardhat-sol-bundler
 
-Build, update and redeploy smart contracts with hardhat with one config.
+Hardhat plugin for declarative smart contract deployments and redeployments.
 
 ## Features
 
@@ -14,34 +14,32 @@ Build, update and redeploy smart contracts with hardhat with one config.
 
 run `npm install --save-dev @dgma/hardhat-sol-bundler`
 
+in addition, the next peer dependencies should be installed:
+
+- "ethers": "^6.11.1",
+- "hardhat": "^2.22.2"
+- "@nomicfoundation/hardhat-ethers" // no need if you use @nomicfoundation/hardhat-toolbox
+
 ## Usage
 
 1. Create deployment config in hardhat.config for the specific network:
 
 ```ts
 import { type HardhatUserConfig } from "hardhat/config";
-// no need @nomicfoundation/hardhat-ethers if you use @nomicfoundation/hardhat-toolbox
 import "@nomicfoundation/hardhat-ethers";
 import { dynamicAddress } from "@dgma/hardhat-sol-bundler";
+import { Logging } from "@dgma/hardhat-sol-bundler/plugins/Logging";
 
 const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       deployment: {
+        plugins: [Logging], // will log the deployment result
         config: {
           TestLibrary: {},
           TestContractOne: {
             contractName: "TestContract",
             args: ["hello one"],
-            options: {
-              libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
-              },
-            },
-          },
-          TestContractTwo: {
-            contractName: "TestContract",
-            args: ["hello two"],
             options: {
               libs: {
                 TestLibrary: dynamicAddress("TestLibrary"),
@@ -57,9 +55,9 @@ const config: HardhatUserConfig = {
 export default config;
 ```
 
-`contractName` property is optional and only needed if configuration contract key is not the same as contract name
+`contractName` property is optional and only needed if the configuration contract key is not the same as the contract name
 
-**note**: dependant contract must be located above
+**note**: the dependant contract must be located above
 
 2. Run task:
 
@@ -73,10 +71,10 @@ npx hardhat deploy-bundle --no-compile true
 
 ## Configuration
 
-- To deploy only modified contracts, add `lockFile` property to deployment:
+To keep deployment results and deploy only modified contracts, add the `lockFile` property to deployment:
 
 ```ts
-const deployment = {
+config.deployment = {
   lockFile: "deployment-lock.json",
   config: {
     // contracts..
@@ -84,31 +82,46 @@ const deployment = {
 };
 ```
 
-- To deploy contract as a proxy:
+To deploy contracts as a proxy:
 
 ```ts
 import { SupportedProxies } from "@dgma/hardhat-sol-bundler";
 
-const deployment = {
+config.deployment = {
   lockFile: "deployment-lock.json",
   config: {
     TestContract: {
       proxy: {
-        type: SupportedProxies.CUSTOM
-      }
-    }
+        type: SupportedProxies.CUSTOM,
+      },
+    },
   },
 };
 ```
 
-- To verify deployed contracts during runtime:
+## Plugins
+
+Simple deployment result logging:
+
+```ts
+import { Logging } from "@dgma/hardhat-sol-bundler/plugins/Logging";
+
+config.deployment = {
+  plugins: [Logging],
+  config: {
+    // contracts..
+  },
+};
+```
+
+Verify deployed contracts:
 
 ```ts
 // no need @nomicfoundation/hardhat-verify if you use @nomicfoundation/hardhat-toolbox
 import "@nomicfoundation/hardhat-verify";
 import { VerifyPlugin } from "@dgma/hardhat-sol-bundler/plugins/Verify";
 
-const deployment = {
+config.deployment = {
   plugins: [VerifyPlugin],
   // set a config level verification
   verify: true,
@@ -125,7 +138,7 @@ const deployment = {
 
 ## Hooks
 
-The library can be easily extended with custom plugins by adding them to `deployment.plugins` list. A simple example of the plugin can be found in `plugins/Verify.ts`.
+The library can be easily extended with custom plugins by adding them to `deployment.plugins` list. A simple example of the plugins can be found in `plugins/*`.
 
 During deployment, sol-bundler can execute additional logic implemented as lifecycle hooks:
 
@@ -133,17 +146,17 @@ During deployment, sol-bundler can execute additional logic implemented as lifec
 BEFORE_CONTEXT_INITIALIZATION - fires once, before deployment runtime context creation;
 BEFORE_DEPLOYMENT - fires once, after deployment runtime context creation and before deployment logic initiation;
 
-BEFORE_DEPENDENCY_RESOLUTION - fires for each contract in config, before resolving dynamically contract dependencies (arguments and libraries);
+BEFORE_DEPENDENCY_RESOLUTION - fires for each contract in the config, before resolving dynamically contract dependencies (arguments and libraries);
 
-BEFORE_CONTRACT_BUILD - fires for each contract in config, before creating contract factory;
-AFTER_CONTRACT_BUILD - fires for each contract in config, after creating contract factory;
+BEFORE_CONTRACT_BUILD - fires for each contract in the config, before creating contract factory;
+AFTER_CONTRACT_BUILD - fires for each contract in the config, after creating contract factory;
 
-BEFORE_CONTRACT_DEPLOY - fires for each contract in config, before contract deployment;
-AFTER_DEPLOYMENT - fires for each contract in config, after contract deployment;
+BEFORE_CONTRACT_DEPLOY - fires for each contract in the config, before contract deployment;
+AFTER_CONTRACT_DEPLOY - fires for each contract in the config, after contract deployment;
 
-AFTER_CONTEXT_SERIALIZATION: "AFTER_CONTEXT_SERIALIZATION" - fires for each contract in config, after deployment runtime context serialization (preparation for storing output into lock file);
+AFTER_CONTEXT_SERIALIZATION: "AFTER_CONTEXT_SERIALIZATION" - fires for each contract in the config, after deployment runtime context serialization (preparation for storing output into lock file);
 
-AFTER_CONTRACT_DEPLOY - fires once, after all contracts deployment;
+AFTER_DEPLOYMENT - fires once, after all contracts deployment;
 ```
 
 ## Deployment output

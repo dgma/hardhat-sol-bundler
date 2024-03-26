@@ -17,8 +17,8 @@ const config: HardhatUserConfig = {
       deployment: {
         plugins: [VerifyPlugin],
         config: {
-          TestLibrary: {},
-          TestTransparentUpgradable: {
+          LenLibrary: {},
+          MockTransparentUpgradable: {
             proxy: {
               type: SupportedProxies.TRANSPARENT,
               unsafeAllow: ["external-library-linking"],
@@ -26,11 +26,11 @@ const config: HardhatUserConfig = {
             args: ["hello"],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
-          testUUPSUpgradable: {
+          MockUUPSUpgradable: {
             proxy: {
               type: SupportedProxies.UUPS,
               unsafeAllow: ["external-library-linking"],
@@ -38,25 +38,25 @@ const config: HardhatUserConfig = {
             args: ["hello"],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
-          TestContractFirst: {
-            contractName: "TestContract",
+          MockContractFirst: {
+            contractName: "MockContract",
             args: ["hello", parseEther("0.1")],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
-          TestContractSecond: {
-            contractName: "TestContract",
+          MockContractSecond: {
+            contractName: "MockContract",
             args: ["hello", parseEther("0.2")],
             options: {
               libs: {
-                TestLibrary: dynamicAddress("TestLibrary"),
+                LenLibrary: dynamicAddress("LenLibrary"),
               },
             },
           },
