@@ -16,17 +16,23 @@ run `npm install --save-dev @dgma/hardhat-sol-bundler`
 
 in addition, the next peer dependencies should be installed:
 
-- "ethers": "^6.11.1",
-- "hardhat": "^2.22.2"
-- "@nomicfoundation/hardhat-ethers" // no need if you use @nomicfoundation/hardhat-toolbox
+- "@nomicfoundation/hardhat-ethers": "^3.0.8"
+- "@nomicfoundation/hardhat-verify": "^2.0.13"
+- "@openzeppelin/hardhat-upgrades": "^3.9.0"
+- "ethers": "^6.13.5"
+- "hardhat": "^2.23.0"
 
 ## Usage
 
-1. Create deployment config in hardhat.config for the specific network:
+1. Import @nomicfoundation/hardhat-ethers, @nomicfoundation/hardhat-verify and @openzeppelin/hardhat-upgrades to `hardhat.config`
+
+2. Create deployment config in hardhat.config for the specific network:
 
 ```ts
 import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-verify";
+import "@nomicfoundation/hardhat-upgrades";
 import { dynamicAddress } from "@dgma/hardhat-sol-bundler";
 import { Logging } from "@dgma/hardhat-sol-bundler/plugins/Logging";
 
@@ -34,7 +40,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       deployment: {
-        plugins: [Logging], // will log the deployment result
+        plugins: [Logging], // logs the deployment result
         config: {
           TestLibrary: {},
           TestContractOne: {
@@ -92,12 +98,17 @@ config.deployment = {
   config: {
     TestContract: {
       proxy: {
-        type: SupportedProxies.CUSTOM,
+        type: SupportedProxies.TRANSPARENT,
       },
     },
   },
 };
 ```
+
+SupportedProxies.TRANSPARENT and SupportedProxies.UUPS proxies can be added directly to proxied contract configuration.
+hardhat-upgrades module will automatically manage the creation of ERC1967 proxy contract and upgrade logic.
+
+For manual and separate deployment of Proxy contract and Implementation contract, SupportedProxies.CUSTOM should be used.
 
 ## Plugins
 

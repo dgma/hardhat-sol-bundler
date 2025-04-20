@@ -105,7 +105,9 @@ export const serialize: ContextManipulator = async (
 
             if (!isValid) {
               console.warn(
-                `contract ${cst.name} has intersect fragments for constructor or fallback. Chose those which describes proxy contract`,
+                `[hardhat-sol-bundler:warn]
+                  Proxy contract constructor and fallback have been chosen for ${cst.name}.
+                `,
               );
             }
             return isValid;
