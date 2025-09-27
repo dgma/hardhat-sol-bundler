@@ -7,11 +7,8 @@ import { VerifyPlugin } from "./plugins/Verify";
 import { dynamicAddress, SupportedProxies } from "./src";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.20",
-  paths: {
-    sources: "./testData",
-    tests: "./integration",
-  },
+  solidity: "0.8.28",
+  paths: { sources: "./testData", tests: "./integration" },
   networks: {
     hardhat: {
       deployment: {
@@ -24,11 +21,7 @@ const config: HardhatUserConfig = {
               unsafeAllow: ["external-library-linking"],
             },
             args: ["hello"],
-            options: {
-              libs: {
-                LenLibrary: dynamicAddress("LenLibrary"),
-              },
-            },
+            options: { libs: { LenLibrary: dynamicAddress("LenLibrary") } },
           },
           MockUUPSUpgradable: {
             proxy: {
@@ -36,29 +29,17 @@ const config: HardhatUserConfig = {
               unsafeAllow: ["external-library-linking"],
             },
             args: ["hello"],
-            options: {
-              libs: {
-                LenLibrary: dynamicAddress("LenLibrary"),
-              },
-            },
+            options: { libs: { LenLibrary: dynamicAddress("LenLibrary") } },
           },
           MockContractFirst: {
             contractName: "MockContract",
             args: ["hello", parseEther("0.1")],
-            options: {
-              libs: {
-                LenLibrary: dynamicAddress("LenLibrary"),
-              },
-            },
+            options: { libs: { LenLibrary: dynamicAddress("LenLibrary") } },
           },
           MockContractSecond: {
             contractName: "MockContract",
             args: ["hello", parseEther("0.2")],
-            options: {
-              libs: {
-                LenLibrary: dynamicAddress("LenLibrary"),
-              },
-            },
+            options: { libs: { LenLibrary: dynamicAddress("LenLibrary") } },
           },
         },
       },
